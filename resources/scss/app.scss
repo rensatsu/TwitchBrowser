@@ -1,0 +1,513 @@
+@import url('https://fonts.googleapis.com/css?family=Play');
+
+@-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
+@-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
+@keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
+
+.loading img {
+	-webkit-animation: spin 2s linear infinite;
+	-moz-animation: spin 2s linear infinite;
+	animation: spin 2s linear infinite;
+}
+
+*, *:before, *:after {
+	box-sizing: border-box;
+}
+
+html {
+	min-height: 100%;
+}
+
+body {
+	min-height: 100%;
+	background: #1F3660;
+	font-family: 'Play', 'PT Sans', 'Ubuntu', 'Tahoma', 'Arial', sans-serif;
+	overflow-x: hidden;
+}
+
+a, input[type="button"], input[type="submit"], button {
+	outline: 0 !important;
+}
+
+a {
+	text-decoration: none;
+}
+
+.noselect {
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	cursor: default;
+}
+
+#redirframe {
+	opacity: .001;
+	width: 1px;
+	height: 1px;
+	top: -1000px;
+	left: -1000px;
+	border: 0;
+}
+
+.chan-name-link {
+	font-weight: bold;
+	color: #444;
+	display: block;
+}
+
+.list-group-item-info .chan-name-link {
+	color: #31708F;
+}
+
+.follows-control {
+	margin: 3px 0 3px 7px;
+}
+
+.preview-banner {
+	text-align: center;
+	margin-top: 10px;
+}
+
+.preview-banner img {
+	width:100%;
+}
+
+.list-group-item {
+	padding: 10px;
+}
+
+.btn-nav-back {
+	float: left;
+	margin: 3px 7px 0 0;
+}
+
+.btn-nav-back-small {
+	float: left;
+	margin: 0 7px 0 0;
+}
+
+.text-muted {
+	color: #666;
+}
+
+.hide {
+	display: none;
+}
+
+.thumbnail {
+    display: block;
+	padding: 0;
+    margin-bottom: 20px;
+    line-height: 1.42857143;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    -webkit-transition: border .2s ease-in-out;
+    -o-transition: border .2s ease-in-out;
+    transition: border .2s ease-in-out;
+}
+
+.thumbnail > img, .thumbnail a > img {
+	border-radius: 2px 2px 0 0;
+	margin-left: auto;
+    margin-right: auto;
+	display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+.thumbnail .caption {
+	padding: 5px;
+}
+
+.thumbnail .caption p {
+	margin: 0;
+	padding: 5px 0 0;
+}
+
+#favblock .list-group-item .fav-avatar {
+	width: 32px;
+	height: 32px;
+}
+
+.game-title {
+	overflow: hidden;
+	white-space: nowrap;
+	font-weight: bold;
+	text-overflow: ellipsis;
+	display: block;
+	color: #000;
+	font-size: 120%;
+}
+
+.game-container {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	flex-wrap: wrap;
+}
+
+.game-box {
+	flex: 1 1 auto;
+	width: 170px;
+	margin: 3px;
+}
+
+.container-navbar {
+	margin: 5px auto 20px !important;
+}
+
+/* menus */
+.dropdown-menu {
+    border: 1px solid #057;
+	box-shadow: 0 2px 10px 2px rgba(0, 0, 0, .7);
+}
+
+.dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus {
+	/* colors of .btn-primary */
+	background-color: #2771B3;
+	border-color: #0e5da1;
+	color: #fff;
+}
+/* end: menus */
+
+.btn, .btn:hover, .btn:active, .btn.active, .btn:focus {
+	transition: .1s background-color, border-color, box-shadow;
+	outline: 0 !important;
+	background-image: linear-gradient(rgba(0, 0, 0, .05) 5%, rgba(0, 0, 0, .23) 95%, rgba(0, 0, 0, .16) 100%);
+	border-radius: 3px;
+	cursor: pointer;
+}
+
+.btn-default {
+	background-color: #fff;
+	border-color: #aaa;
+}
+
+.btn-default:hover, .btn-default:focus, .btn-default:active, .btn-default.active {
+	background-color: #eee;
+	border-color: #999;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #337ab7;
+    border-color: #2e6da4;
+}
+
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary.active, .open .dropdown-toggle.btn-primary {
+	border-color: #1e619c;
+	background-color: #2e84e6;
+}
+
+.btn-danger {
+    color: #fff;
+    background-color: #d9534f;
+    border-color: #d43f3a;
+}
+
+.nav>li>a {
+	transition:.3s background-color;
+}
+
+.nav>li>a:hover, .nav>li>a:focus {
+	background: rgba(65, 170, 229, 0.24);
+}
+
+.panel-default > .panel-heading {
+	background: #f5f5f5 linear-gradient(#fff 5%, #eee 50%, #ddd);
+	text-shadow: 1px 1px 0px #fff;
+}
+
+.label {
+	text-shadow: 1px 1px 0px rgba(0,0,0,.1);
+}
+
+label[for] {
+	cursor: pointer;
+}
+/* actual css for app */
+
+#page, #page-sidebar {
+	height: 100%;
+	position: fixed;
+	top: 0;
+	padding: 5px;
+}
+
+#page {
+	left: 0;
+	width: calc(100% - 350px);
+}
+
+#page .panel {
+	padding: 0;
+}
+
+#page-sidebar {
+	right: 0;
+	width: 350px;
+	padding-left: 0;
+}
+
+#page .panel, #page-sidebar .panel {
+	height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+#page .panel-body, #page-sidebar .follows-list, #search-results .follows-list {
+	overflow-x: hidden;
+	overflow-y: auto;
+	height: 100%;
+}
+
+#page-sidebar #favblock {
+	height: 100%;
+}
+
+.follows-list {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	justify-content: space-around;
+	align-content: flex-start;
+}
+
+.follows-item {
+	margin: 3px;
+	border-radius: 3px;
+	flex: 1 0 0;
+	border: 1px solid #479;
+	min-width: 80px;
+	max-width: 100px;
+}
+
+.follows-online {
+    background: #bde;
+	border-color: #36c;
+}
+
+.follows-item .fav-avatar {
+	width: 100%;
+	height: auto;
+}
+
+.follows-viewers {
+    position: relative;
+    padding: 2px 4px;
+    color: #fff;
+    font-size: 80%;
+    text-shadow: 0 0 2px #000;
+    font-weight: bold;
+	background: rgba(0, 0, 0, .4);
+	float: left;
+	margin-bottom: -100%;
+}
+
+.follows-data {
+	margin: 2px;
+	text-align: left;
+}
+
+.channel-info, .chan-name-link {
+	display: block;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	line-height: 1.5;
+}
+
+.channel-info {
+	font-size: 80%;
+}
+
+#notifications {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	z-index: 9999;
+}
+
+.notification {
+    background: rgba(0, 0, 0, .95);
+    border-top: 1px solid rgba(100, 100, 100, .95);
+    color: #fff;
+    text-shadow: 0 0 1px #000;
+    padding: 5px;
+    text-align: center;
+    font-size: 120%;
+    width: 100%;
+}
+
+#bottom-bar {
+	position: fixed;
+	bottom: 0;
+	right: 20px;
+	min-width: 150px;
+	background: rgba(90, 90, 90, .7);
+	padding: 5px 15px;
+	border-radius: 5px 5px 0 0;
+	border: 1px solid #777;
+	color: #fff;
+}
+
+#bottom-bar .bottom-bar-item {
+	margin: 0 3px 0 0;
+}
+
+#bottom-bar .bottom-bar-item:first-child {
+	margin: 0 3px 0 0;
+}
+
+#goto-win-backdrop {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, .5);
+	z-index: 9998;
+	display: none;
+}
+
+#goto-win-inner {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 80%;
+	min-width: 200px;
+	max-width: 700px;
+	background: #fff;
+	padding: 20px;
+	font-size: 120%;
+	border: 1px solid #000;
+	z-index: 9999;
+	display: none;
+}
+
+#goto-win-inner>div{
+	margin: 5px 0;
+}
+
+#goto-win-prompt, #goto-win-confirm {
+	width: 100%;
+}
+
+.loading {
+	width: 200px;
+	margin: auto;
+	background: #fff;
+	border-radius: 5px;
+	padding: 10px;
+	text-align: center;
+}
+
+.window {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: #000;
+	z-index: 10;
+	display: none;
+	flex-direction: column;
+	outline: 0;
+}
+
+.window-heading {
+	z-index: 2;
+    padding: 10px;
+	position: fixed;
+	right: 0;
+	top: 0;
+	transition: .3s linear right;
+}
+
+.window-body {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 1;
+	transition: .3s linear padding-right;
+}
+
+.window-sidebar, .window-sidebar iframe {
+	position: fixed;
+	top: 0;
+	right: 0;
+	width: 400px;
+	z-index: 2;
+	margin-right: -100%;
+	transition: .3s linear margin-right;
+}
+
+.window-sidebar iframe {
+	z-index: 3;
+}
+
+.popup-sidebar-showing .window-sidebar iframe {
+	margin-right: 0;
+}
+
+.popup-sidebar-showing .window-heading {
+	right: 400px;
+}
+
+.popup-sidebar-showing .window-body {
+	padding-right: 400px;
+}
+
+#channel-preview-body video {
+	width: 100%;
+	height: 100%;
+}
+
+#channel-preview-body iframe {
+	width: 100%;
+	height: 100%;
+	border: 0;
+}
+
+#search-results {
+	max-height: 300px;
+	overflow-y: auto;
+	display: flex;
+}
+
+#search-results-channels, #search-results-games {
+	padding: 3px;
+	width: 50%;
+}
+
+.search-result-channel, .search-result-game {
+	display: flex;
+	width: 100%;
+	text-decoration: none !important;
+	padding: 3px;
+	margin: 3px 0;
+	border: 1px solid #aaa;
+	background: #fff;
+}
+
+.search-result-channel:hover, .search-result-game:hover {
+	background: #ddd;
+}
+
+.search-result-channel img, .search-result-game img {
+	width: 50px;
+	height: 50px;
+	min-width: 50px;
+	min-height: 50px;
+	max-width: 50px;
+	max-height: 50px;
+	margin: 0 3px 0 0;
+}

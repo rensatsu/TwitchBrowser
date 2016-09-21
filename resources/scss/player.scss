@@ -1,0 +1,64 @@
+@import url('https://fonts.googleapis.com/css?family=Play');
+@import 'slider';
+
+* {
+	font-family: 'Play', 'PT Sans', 'Ubuntu', 'Tahoma', 'Arial', sans-serif;
+}
+
+#video {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: #000;
+	z-index: 1;
+}
+
+#message {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	z-index: 2;
+	background: rgb(200, 200, 200);
+	display: none;
+	text-align: center;
+	font-weight: bold;
+	padding: 5px;
+	
+	&.fatal {
+		background: rgb(255, 100, 100);
+	}
+	
+	&.nonfatal {
+		background: rgb(200, 200, 100);
+	}
+}
+
+#controls {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	z-index: 2;
+	background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, .8) 80%);
+	display: none;
+	justify-content: space-between;
+	
+	.buttons {
+		height: 30px;
+		margin: 0;
+		padding: 0;
+	}
+	
+	button {
+		width: 120px;
+		height: 30px;
+		margin: 0;
+	}
+}
+
+#slider-volume {
+	width: 160px;
+}

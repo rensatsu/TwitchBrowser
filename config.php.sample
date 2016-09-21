@@ -1,0 +1,14 @@
+<?
+$CONFIG = array(
+	'twitch' => array(
+		'clid' => '', // client id
+		'clsc' => '', // client secret
+		'home' => 'https://ptdev.pw/apps/twitch/index.php' // redirect_uri
+	),
+	
+	'counts' => array(
+		'streams' => 36,
+		'games' => 24
+	)
+);
+?>
