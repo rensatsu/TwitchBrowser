@@ -32,7 +32,6 @@ $ver = 14;
 				<button id='btn-stop'>&#9632; Sto<u>p</u></button>
 				<button id='btn-screen'>&harr; <u>F</u>ullscreen</button>
 			</div>
-			<!-- <span class='spacer'>#</span> -->
 			
 			<input id='slider-volume' type='range' min='0' max='1' value='0.5' step='0.01' class='slider' />
 		</div>

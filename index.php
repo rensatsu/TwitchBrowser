@@ -188,8 +188,6 @@ $twitchAuth = check_auth();
 		<script src='<?=$static?>/node_modules/jquery/dist/jquery.min.js'></script>
 		<script src='<?=$static?>/bootstrap-3.3/js/bootstrap.min.js'></script>
 		<script src='resources/scripts/scripts.js?_v=<?=$resVersion?>'></script>
-		<!-- <script src='resources/hls.min.js?_v=<?=$resVersion?>'></script> -->
-		<!-- <script src="https://player.twitch.tv/js/embed/v1.js"></script> -->
 		
 		<!-- Google Analytics -->
 		<script>
