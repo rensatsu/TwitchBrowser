@@ -1,4 +1,6 @@
-var video;
+var player;
+var nsfwCheckComplete = false;
+var startTime = new Date();
 
 var Storage = {
 	prefix: 'link_twitch_',
@@ -29,14 +31,32 @@ function ge(el) {
 
 var Controls = {
 	hideTimeVar: false,
+	hideTimeFilter: 0,
+	hideTimeLast: 0,
 	initComplete: false,
 	muteEnabled: false,
 	muteVolume: 0,
+	playerVolume: 0.5,
 	isPlaying: false,
+	
+	hideTimerFiltered: function() {
+		var d1 = this.hideTimeLast;
+		var d2 = new Date();
+		var filterInterval = 600;
+		var filterAmount = 20;
+		
+		if (d2 - d1 < filterInterval && this.hideTimeFilter++ > filterAmount) {
+			this.hideTimer(false);
+			this.hideTimeFilter = 0;
+		} else if (d2 - d1 >= filterInterval) {
+			this.hideTimeFilter = 0;
+			this.hideTimeLast = d2;
+		}
+	},
 	
 	hideTimer: function(disable) {
 		if (this.initComplete) {
-			ge('controls').style.display = 'flex';
+			document.body.className = '';
 			
 			if (this.hideTimeVar) {
 				clearTimeout(this.hideTimeVar);
@@ -44,19 +64,15 @@ var Controls = {
 			
 			if (!disable) {
 				this.hideTimeVar = setTimeout(function() {
-					ge('controls').style.display = 'none';
-				}, 3000);
+					document.body.className = 'nocontrols';
+				}, 4000);
 			}
 		}
 	},
 	
 	play: function(trigger, seek) {
-		if (seek) {
-			video.currentTime = (video.duration - 7 > 0) ? video.duration - 7 : 0;
-		}
-		
 		if (trigger) {
-			video.play();
+			player.play();
 		}
 		
 		ge('btn-play').style.display = 'none';
@@ -67,7 +83,7 @@ var Controls = {
 	
 	stop: function(trigger) {
 		if (trigger) {
-			video.pause();
+			player.pause();
 		}
 		
 		ge('btn-play').style.display = '';
@@ -81,7 +97,7 @@ var Controls = {
 			if (this.isPlaying) {
 				this.stop(true);
 			} else {
-				this.play(true, true);
+				this.play(true);
 			}
 		}
 	},
@@ -117,14 +133,18 @@ var Controls = {
 	},
 	
 	volume: function(value, save, updateTrackBar) {
-		if (this.muteEnabled) {
-			this.muteEnabled = false;
+		if (player.getMuted()) {
+			player.setMuted(false);
 		}
 		
 		value = value > 1 ? 1 : value;
 		value = value < 0 ? 0 : value;
 		
-		video.volume = value;
+		setVal = Math.pow(value, 2);
+		this.playerVolume = value;
+				
+		player.setVolume(setVal);
+		
 		if (save) {
 			Storage.set('volume', value);
 		}
@@ -136,23 +156,20 @@ var Controls = {
 	},
 	
 	mute: function() {
-		if (this.muteEnabled) {
-			this.muteEnabled = false;
-			video.volume = this.muteVolume;
-			ge('slider-volume').value = this.muteVolume;
+		if (player.getMuted()) {
+			player.setMuted(false);
+			ge('slider-volume').value = this.playerVolume;
 		} else {
-			this.muteEnabled = true;
-			this.muteVolume = video.volume;
-			video.volume = 0;
+			player.setMuted(true);
 			ge('slider-volume').value = 0;
 		}
-		
+
 		this.hideTimer();
 	}
 }
 
 ge('btn-play').addEventListener('click', function() {
-	Controls.play(true, true);
+	Controls.play(true);
 });
 
 ge('btn-stop').addEventListener('click', function() {
@@ -161,49 +178,6 @@ ge('btn-stop').addEventListener('click', function() {
 
 ge('btn-screen').addEventListener('click', function() {
 	Controls.fullscreen();
-});
-
-ge('video').addEventListener('ended', function() {
-	Controls.stop(false);
-});
-
-ge('video').addEventListener('pause', function() {
-	Controls.stop(false);
-});
-
-ge('video').addEventListener('error', function() {
-	Controls.stop(false);
-});
-
-ge('video').addEventListener('suspend', function() {
-	Controls.stop(false);
-});
-
-ge('video').addEventListener('play', function() {
-	Controls.play(false, false);
-});
-
-ge('video').addEventListener('playing', function() {
-	Controls.play(false, false);
-});
-
-ge('video').addEventListener('click', function(e) {
-	e.preventDefault();
-	return false;
-});
-
-ge('video').addEventListener('dblclick', function(e) {
-	Controls.fullscreen();
-	return false;
-});
-
-ge('video').addEventListener('contextmenu', function(e) {
-	e.preventDefault();
-	return false;
-});
-
-ge('video').addEventListener('mousemove', function(e) {
-	Controls.hideTimer(false);
 });
 
 ge('controls').addEventListener('mousemove', function(e) {
@@ -223,7 +197,6 @@ ge('slider-volume').addEventListener('input', function(e) {
 });
 
 document.addEventListener('keypress', function(e) {
-	// console.log(e);
 	if (e.keyCode === 109) { // m
 		Controls.mute();
 		e.preventDefault();
@@ -237,7 +210,6 @@ document.addEventListener('keypress', function(e) {
 });
 
 document.addEventListener('keydown', function(e) {
-	// console.log('keyup', e);
 	if (e.keyCode === 38) { // arrow up
 		Controls.volume(video.volume + 0.05, true, true);
 		e.preventDefault();
@@ -247,17 +219,36 @@ document.addEventListener('keydown', function(e) {
 	}
 });
 
+ge('channel-overlay').addEventListener('click', function(e) {
+	e.preventDefault();
+	return false;
+});
 
-ge('video').addEventListener("mousewheel", mouseWheelHandler, false); // IE9, Chrome, Safari, Opera
-ge('video').addEventListener("DOMMouseScroll", mouseWheelHandler, false); // Firefox
+ge('channel-overlay').addEventListener('dblclick', function(e) {
+	Controls.fullscreen();
+	return false;
+});
+
+ge('channel-overlay').addEventListener('contextmenu', function(e) {
+	e.preventDefault();
+	return false;
+});
+
+ge('channel-overlay').addEventListener('mousemove', function(e) {
+	// Controls.hideTimer(false);
+	Controls.hideTimerFiltered();
+});
+
+ge('channel-overlay').addEventListener("mousewheel", mouseWheelHandler, false); // IE9, Chrome, Safari, Opera
+ge('channel-overlay').addEventListener("DOMMouseScroll", mouseWheelHandler, false); // Firefox
 
 function mouseWheelHandler(e) {
-	// console.log(e);
 	var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+	var currentVol = Controls.playerVolume;
 	if (delta > 0) {
-		Controls.volume(video.volume + 0.05, true, true);
+		Controls.volume(currentVol + 0.05, true, true);
 	} else {
-		Controls.volume(video.volume - 0.05, true, true);
+		Controls.volume(currentVol - 0.05, true, true);
 	}
 	return false;
 }
@@ -282,64 +273,88 @@ var MessageBar = {
 	}
 }
 
+function checkPlayerNSFW() {
+	if (new Date() - startTime > 3000) {
+		nsfwCheckComplete = true;
+		ge('channel-overlay').style.display = 'block';
+	} else {
+		nsfwCheckComplete = false;
+		ge('channel-overlay').style.display = 'none';
+	}
+}
+
 function init() {
-	if (Hls.isSupported()) {
-		video = document.getElementById('video');
-		var hls = new Hls();
-		hls.loadSource('player.php?m3u8=1&channel=' + App.channel + '&quality=' + App.quality + '&_=' + Math.random());
-		hls.attachMedia(video);
-		hls.on(Hls.Events.MANIFEST_PARSED,function() {
-			Controls.initComplete = true;
-			Controls.hideTimer();
-			Controls.play(true, false);
-		});
-		
-		hls.on(Hls.Events.FRAG_LOADED,function() {
-			MessageBar.hide();
-		});
-		
-		hls.on(Hls.Events.ERROR, function(type, e) {
-			if (e.fatal && e.details == 'bufferStalledError') {
-				MessageBar.show("Bufferizing...", false);
-				Controls.play(true, false);
-			} else if (e.fatal && e.details == 'manifestParsingError') {
-				MessageBar.show("Playlist failed to load, retrying.", false);
-				Controls.play(true, false);
-			} else if (e.fatal) {
-				MessageBar.show("HLS.js Playback Error, look for details in console", true);
-			}
+	App.quality = App.quality == 'source' ? 'chunked' : App.quality;
 			
-			if (!e.fatal && e.type == 'networkError') {
-				MessageBar.show("Chunk loading timed out, probably connectivity issues.", false);
-			}
-			
-			console.log("HLS.js error", type, e);
-		});
+	var options = {
+		width: "100%",
+		height: "100%",
+		channel: App.channel,
+		autoplay: false,
+		html5: true,
+		branding: false,
+		quality: App.quality
+	};
 	
+	player = new Twitch.Player("channel-player", options);
+	
+	player.addEventListener(Twitch.Player.READY, function() {
+		Controls.initComplete = true;
+		ge('controls').style.display = 'flex';
+		Controls.hideTimer();
+		
 		var volume = 0.5;
 		if (Storage.get('volume')) {
-			var volumeTest = Storage.get('volume');
+			var volumeTest = parseFloat(Storage.get('volume'));
 			
 			if (volumeTest >= 0 && volumeTest <= 1) {
 				volume = volumeTest;
 			}
 		}
 
-		Storage.set('volume', volume);
-		video.volume = volume;
-		ge('slider-volume').value = volume;
+		Controls.volume(volume, true, true);
+		
+		Controls.play(true);
+	});
+	
+	player.addEventListener(Twitch.Player.ENDED, function() {
+		MessageBar.show("Stream has ended", true);
+		console.log('twitch event ended');
+	});
+	
+	player.addEventListener(Twitch.Player.OFFLINE, function() {
+		MessageBar.show("Stream went offline", true);
+		console.log('twitch event offline');
+	});
+	
+	player.addEventListener(Twitch.Player.PLAY, function() {
+		startTime = new Date();
+		ge('channel-overlay').style.display = 'block';
+		console.log('twitch event play');
+	});
+	
+	player.addEventListener(Twitch.Player.PAUSE, function() {
+		if (!nsfwCheckComplete) {
+			checkPlayerNSFW();
+		}
+		
+		console.log('twitch event pause');
+	});
+	
+	player.addEventListener(Twitch.Player.ONLINE, function() {
+		MessageBar.hide();
+		Controls.play(true);
+		console.log('twitch event online');
+	});
 
-		setTimeout(function() {
-			var i = document.createElement('input');
-			i.type = 'text';
-			i.style.opacity = 0;
-			document.body.appendChild(i);
-			i.focus();
-			document.body.removeChild(i);
-		}, 10);
-	} else {
-		MessageBar.show("HLS.js doesn't support this browser", true);
-	}
+	setTimeout(function() {
+		var i = document.createElement('input');
+		i.type = 'text';
+		i.style.opacity = 0;
+		document.body.appendChild(i);
+		i.focus();
+		document.body.removeChild(i);
+	}, 10);
 }
 
 document.addEventListener('DOMContentLoaded', function() {
