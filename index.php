@@ -19,8 +19,8 @@ if (isset($_GET['_key'])){
 	exit;
 }
 
-$resVersion = 33;
-$resVersion = time() . "dev";
+$resVersion = 35;
+// $resVersion = time() . "dev";
 
 $clru=urlencode($CONFIG['twitch']['home']);
 $need=explode("/", $CONFIG['twitch']['home']);
@@ -81,7 +81,8 @@ $twitchAuth = check_auth();
 	<head>
 		<title>Twitch Browser</title>
 		<link rel='shortcut icon' href='<?=$static?>/img/twitch-favicon.ico'/>
-		<link href='<?=$static?>/bootstrap-3.3/css/bootstrap.min.css' rel='stylesheet'>
+		<link href='<?=$static?>/bootstrap-3.3/css/bootstrap.min.css?_v=<?=$resVersion?>' rel='stylesheet'>
+		<link href='<?=$static?>/node_modules/font-awesome/css/font-awesome.min.css?_v=<?=$resVersion?>' rel='stylesheet'>
 		<link href='resources/styles/app.css?_v=<?=$resVersion?>' rel='stylesheet'>
 		<meta name='viewport' content='width=device-width, initial-scale=1.0, user-scalable=no'>
 	</head>
@@ -89,16 +90,16 @@ $twitchAuth = check_auth();
 		<div class='window' id='channel-preview' tabindex='-1'>
 			<div class='window-heading btn-toolbar'>
 				<button class='btn btn-danger pull-right window-heading-close' type='button' title='Close'>
-					<span class='glyphicon glyphicon-remove'></span>
+					<span class='fa fa-times'></span>
 				</button>
 				<button class='btn btn-primary pull-right window-heading-chat' type='button' title='Toggle Chat'>
-					<span class='glyphicon glyphicon-comment'></span>
+					<span class='fa fa-comments'></span>
 				</button>
 				<button class='btn btn-primary pull-right window-heading-stream' type='button' title='Open in Livestreamer'>
-					<span class='glyphicon glyphicon-expand'></span>
+					<span class='fa fa-arrows-alt'></span>
 				</button>
 				<button class='btn btn-primary pull-right window-heading-popout' type='button' title='Open in New Window'>
-					<span class='glyphicon glyphicon-film'></span>
+					<span class='fa fa-external-link'></span>
 				</button>
 			</div>
 			<div class='window-sidebar' id='channel-preview-chat'></div>
@@ -122,12 +123,39 @@ $twitchAuth = check_auth();
 
 		<div id='notifications' class='noselect'></div>
 		<div id='bottom-bar' class='noselect'>
-			<span class='dropup' id='quality-selector'>
-				<button class='btn btn-xs btn-default bottom-bar-item dropdown-toggle' data-toggle='dropdown' type='button' title='Quality'>
-					<span class='glyphicon glyphicon-signal'></span>
+			<button class='btn btn-xs btn-default bottom-bar-item' type='button' id='goto-settings' title='Application Settings'>
+				<span class='fa fa-cog'></span>
+			</button>
+			<button class='btn btn-xs btn-default bottom-bar-item' type='button' id='goto-channel' title='Search game or channel'>
+				<span class='fa fa-search'></span>
+			</button>
+			<button class='btn btn-xs btn-primary bottom-bar-item hide' type='button' id='goto-auth' title='Authorize'>
+				<span class='fa fa-user-circle'></span>
+			</button>
+			<span class='copy bottom-bar-item'>&copy; LinkSoft <? echo date('Y'); ?> / v0.<?=$resVersion?></span>
+		</div>
+		
+		<div id='goto-win-backdrop' class='lmd-backdrop'></div>
+		<div id='goto-win-inner' class='lmd-window'>
+			<h3>Search<button class='btn btn-sm btn-danger pull-right lmd-close'><span class='fa fa-times fa-fw'></span></button></h3>
+			<div>Enter search query or twitch link:</div>
+			<div><input type='text' id='goto-win-prompt' /></div>
+			<div>
+				<button id='goto-win-confirm' class='btn btn-primary'>
+					Go <span class='fa fa-arrow-right'></span>
+				</button>
+			</div>
+			<div id='search-results'></div>
+		</div>
+		
+		<div id='settings-win-backdrop' class='lmd-backdrop'></div>
+		<div id='settings-win-inner' class='lmd-window'>
+			<h3>Settings<button class='btn btn-sm btn-danger pull-right lmd-close'><span class='fa fa-times fa-fw'></span></button></h3>
+			<div class='dropdown' id='quality-selector'>
+				<button class='btn btn-default btn-block dropdown-toggle text-left' data-toggle='dropdown' type='button' title='Quality'>
+					<span class='fa fa-signal fa-fw'></span> Preferred Stream Quality
 				</button>
 				<ul class='dropdown-menu'>
-					<li class='dropdown-header'>Preferred quality</li>
 					<li class='dropdown-item'>
 						<a href='javascript:' class='quality-selector' data-value='audio,mobile,low,medium,high,source'>Audio only</a>
 					</li>
@@ -147,13 +175,12 @@ $twitchAuth = check_auth();
 						<a href='javascript:' class='quality-selector' data-value='source'>Source</a>
 					</li>
 				</ul>
-			</span>
-			<span class='dropup' id='player-selector'>
-				<button class='btn btn-xs btn-default bottom-bar-item dropdown-toggle' data-toggle='dropdown' type='button' title='Player'>
-					<span class='glyphicon glyphicon-cog'></span>
+			</div>
+			<div class='dropdown' id='player-selector'>
+				<button class='btn btn-default btn-block dropdown-toggle text-left' data-toggle='dropdown' type='button' title='Player'>
+					<span class='fa fa-cog fa-fw'></span> Player Application
 				</button>
 				<ul class='dropdown-menu'>
-					<li class='dropdown-header'>Player Application</li>
 					<li class='dropdown-item'>
 						<a href='javascript:' class='player-selector' data-value='inapp'>In-app</a>
 					</li>
@@ -161,27 +188,14 @@ $twitchAuth = check_auth();
 						<a href='javascript:' class='player-selector' data-value='livestreamer'>Livestreamer</a>
 					</li>
 				</ul>
-			</span>
-			<button class='btn btn-xs btn-default bottom-bar-item' type='button' id='goto-channel' title='Search game or channel'>
-				<span class='glyphicon glyphicon-search'></span>
-			</button>
-			<button class='btn btn-xs btn-primary bottom-bar-item hide' type='button' id='goto-auth' title='Authorize'>
-				<span class='glyphicon glyphicon-user'></span>
-			</button>
-			<span class='copy bottom-bar-item'>&copy; LinkSoft <? echo date('Y'); ?> / v0.<?=$resVersion?></span>
-		</div>
-		
-		<div id='goto-win-backdrop'></div>
-		<div id='goto-win-inner'>
-			<h3>Search</h3>
-			<div>Enter search query or twitch link:</div>
-			<div><input type='text' id='goto-win-prompt' /></div>
-			<div>
-				<button id='goto-win-confirm' class='btn btn-primary'>
-					<span class='glyphicon glyphicon-chevron-right'></span> Go
-				</button>
 			</div>
-			<div id='search-results'></div>
+			<div data-toggle='buttons'>
+				<label class='btn btn-default btn-block text-left'>
+					<input type='checkbox' autocomplete='off' id='chat-checkbox'>
+					<span class='fa fa-check-square fa-fw' id='chat-checkbox-icon'></span>
+					Show Chat window by default
+				</label>
+			</div>
 		</div>
 		
 		<script>var userAuthorized = '<?=$twitchAuth?>';</script>

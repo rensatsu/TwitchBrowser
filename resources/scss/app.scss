@@ -88,6 +88,10 @@ a {
 	margin: 0 7px 0 0;
 }
 
+.text-left {
+	text-align: left;
+}
+
 .text-muted {
 	color: #666;
 }
@@ -364,7 +368,7 @@ label[for] {
 	margin: 0 3px 0 0;
 }
 
-#goto-win-backdrop {
+.lmd-backdrop {
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -375,7 +379,7 @@ label[for] {
 	display: none;
 }
 
-#goto-win-inner {
+.lmd-window {
 	position: fixed;
 	top: 50%;
 	left: 50%;
@@ -389,10 +393,10 @@ label[for] {
 	border: 1px solid #000;
 	z-index: 9999;
 	display: none;
-}
-
-#goto-win-inner>div{
-	margin: 5px 0;
+	
+	div{
+		margin: 5px 0;
+	}
 }
 
 #goto-win-prompt, #goto-win-confirm {

@@ -112,7 +112,7 @@ function twget($action, $age=300, $err_no_cache=false){
 
 function check_auth() {
 	$tmp=twget('/user', false);
-	$header="<div id='favblock'><div class='panel panel-default'><div class='panel-heading'><a class='btn btn-default btn-xs btn-nav-back-small' href='javascript:' onClick='get_favourites();' title='Refresh'><span class='glyphicon glyphicon-refresh'></span></a> Followed channels</div>";
+	$header="<div id='favblock'><div class='panel panel-default'><div class='panel-heading'><a class='btn btn-default btn-xs btn-nav-back-small' href='javascript:' onClick='get_favourites();' title='Refresh'><span class='fa fa-refresh'></span></a> Followed channels</div>";
 	$footer="</div></div>";
 	return isset($tmp->display_name);
 }
@@ -128,7 +128,7 @@ function get_top_games($onlyPanel = false, $onlyGames = false, $limit=12, $offse
 	$rnd = mt_rand(1000, 9999);
 
 	if (!$onlyGames) {
-		$header = "<div class='panel panel-default'><div class='panel-heading'><a href='?main=1&offset={$offset}&_={$rnd}' class='btn btn-default btn-xs btn-nav-back-small ajax' title='Refresh'><span class='glyphicon glyphicon-refresh'></span></a>Popular games</div><div class='panel-body noselect' id='page-popular-games'>";
+		$header = "<div class='panel panel-default'><div class='panel-heading'><a href='?main=1&offset={$offset}&_={$rnd}' class='btn btn-default btn-xs btn-nav-back-small ajax' title='Refresh'><span class='fa fa-refresh'></span></a>Popular games</div><div class='panel-body noselect' id='page-popular-games'>";
 		$footer = "</div></div>";
 	} else {
 		$header = '';
@@ -162,10 +162,10 @@ function get_top_games($onlyPanel = false, $onlyGames = false, $limit=12, $offse
 									<div class='caption'>
 										<a href='?game={$ueg}' class='game-title ajax' title='{$gname}'>{$gname}</a>
 										<p title='Live channels'>
-											<span class='glyphicon glyphicon-user'></span> {$t_chn}
+											<span class='fa fa-user fa-fw'></span> {$t_chn}
 										</p>
 										<p title='Viewers'>
-											<span class='glyphicon glyphicon-eye-open'></span> {$t_vwr}
+											<span class='fa fa-eye fa-fw'></span> {$t_vwr}
 										</p>
 									</div>
 								</div>
@@ -201,8 +201,8 @@ function get_game_streams($game, $limit=12, $offset=0){
 	} else {
 		$tmp=twget("/streams?limit={$limit}&offset={$offset}&game={$ueg}");
 	}
-	//$header="<h2><a href='?main=1' class='glyph-link' title='Back'><span class='glyphicon glyphicon-chevron-left'></span></a> {$game}</h2>";
-	$header="<div class='panel panel-default'><div class='panel-heading'><div class='btn-group'><a href='?main=1' class='btn btn-default ajax' title='Back'><span class='glyphicon glyphicon-chevron-left'></span></a><a class='btn btn-default ajax' href='?game={$ueg}'>{$game}</a></div></div><div class='panel-body'>";
+	//$header="<h2><a href='?main=1' class='glyph-link' title='Back'><span class='fa fa-arrow-left'></span></a> {$game}</h2>";
+	$header="<div class='panel panel-default'><div class='panel-heading'><div class='btn-group'><a href='?main=1' class='btn btn-default ajax' title='Back'><span class='fa fa-arrow-left'></span></a><a class='btn btn-default ajax' href='?game={$ueg}'>{$game}</a></div></div><div class='panel-body'>";
 	if (isset($tmp->streams)){
 		$list = "<div class='game-container'>";
 		$i=0;
@@ -222,10 +222,10 @@ function get_game_streams($game, $limit=12, $offset=0){
 							<div class='caption'>
 								<a href='?channel={$stream->channel->name}' class='game-title ajax' title='{$escstatus}'>{$strstatus}</a>
 								<p>
-									<span class='glyphicon glyphicon-user'></span> {$stream->channel->display_name}
+									<span class='fa fa-user fa-fw'></span> {$stream->channel->display_name}
 								</p>
 								<p title='Viewers'>
-									<span class='glyphicon glyphicon-eye-open'></span> {$t_vwr}
+									<span class='fa fa-eye fa-fw'></span> {$t_vwr}
 								</p>
 							</div>
 						</div>
@@ -303,7 +303,7 @@ function get_top_streams($limit=15, $offset=0){
 	} else {
 		$tmp=twget("/streams?limit={$limit}&offset={$offset}");
 	}
-	$header="<div id='favblock'><div class='panel panel-default'><div class='panel-heading'><a class='btn btn-default btn-xs btn-nav-back-small' href='javascript:' onClick='get_favourites();' title='Refresh'><span class='glyphicon glyphicon-refresh'></span></a> Top channels</div>";
+	$header="<div id='favblock'><div class='panel panel-default'><div class='panel-heading'><a class='btn btn-default btn-xs btn-nav-back-small' href='javascript:' onClick='get_favourites();' title='Refresh'><span class='fa fa-refresh'></span></a> Top channels</div>";
 	$footer="</div></div>";
 	if (isset($tmp->streams)){
 		$header .= "<div class='follows-list'>";
@@ -331,7 +331,7 @@ function format_favourite($streams, $name, $display_name, $logo, $online){
 	$onl_highlight=($online) ? ' follows-online' : '';
 	$onl_play=($online) ? "<a  onclick='livestreamer(this);' data-live='http://twitch.tv/{$name}' href='javascript:' title='Start in Livestreamer'><img src='" . replace_http($logo). "' class='fav-avatar'></a>" : "<img src='" . replace_http($logo). "' class='fav-avatar'>";
 	$viewers=($online) ? $streams[$name]['viewers'] : false;
-	$vwr=($viewers) ? "<span class='follows-viewers'><span class='glyphicon glyphicon-eye-open'></span> {$viewers}</span>" : '';
+	$vwr=($viewers) ? "<span class='follows-viewers'><span class='fa fa-eye fa-fw'></span> {$viewers}</span>" : '';
 	$game=(isset($streams[$name]['game']) && $streams[$name]['game']!==NULL) ? "<b>{$streams[$name]['game']}</b> - " : '';
 	$tooltip=($online) ? str_replace("'", "&#39;", $streams[$name]['game'] . ' - ' . $streams[$name]['status']) : '';
 	$details=(isset($streams[$name]['status'])) ? "<div class='text-muted channel-info' title='{$tooltip}'>{$game}{$streams[$name]['status']}</div>" : "<div class='text-muted channel-info' title='Channel is offline'>Offline</div>";
@@ -351,7 +351,7 @@ function format_favourite($streams, $name, $display_name, $logo, $online){
 function get_favourites($ajax=false){
 	//$user=urlencode($user);
 	$tmp=twget('/user', false);
-	$header="<div id='favblock'><div class='panel panel-default'><div class='panel-heading'><a class='btn btn-default btn-xs btn-nav-back-small' href='javascript:' onClick='get_favourites();' title='Refresh'><span class='glyphicon glyphicon-refresh'></span></a> Followed channels</div>";
+	$header="<div id='favblock'><div class='panel panel-default'><div class='panel-heading'><a class='btn btn-default btn-xs btn-nav-back-small' href='javascript:' onClick='get_favourites();' title='Refresh'><span class='fa fa-refresh'></span></a> Followed channels</div>";
 	$footer="</div></div>";
 	if (isset($tmp->display_name)){
 		$user=$tmp->display_name;

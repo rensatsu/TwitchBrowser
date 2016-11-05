@@ -22,7 +22,8 @@ function getRandom (min, max) {
 var Settings = {
 	quality: 'source',
 	player: 'inapp',
-	readNotices: ''
+	readNotices: '',
+	chat: false
 }
 
 var Notices = {
@@ -126,6 +127,22 @@ var Search = {
 				// console.log(d);
 			}
 		});
+	}
+}
+
+var SettingsWindow = {
+	open: function() {
+		$('#settings-win-backdrop').fadeIn('fast');
+		$('#settings-win-inner').fadeIn('fast');
+	},
+	
+	close: function() {
+		$('#settings-win-backdrop').fadeOut('fast');
+		$('#settings-win-inner').fadeOut('fast');
+	},
+	
+	init: function() {
+		
 	}
 }
 
@@ -310,6 +327,20 @@ function setChannel(a) {
 	location.hash = 'channel=' + channel;
 }
 
+function setChat(a) {
+	var val = a || false;
+	
+	Settings.chat = val;
+	
+	LS.set('pref_chat', val);
+	
+	if (val) {
+		$('#chat-checkbox-icon').removeClass('fa-square').addClass('fa-check-square');
+	} else {
+		$('#chat-checkbox-icon').removeClass('fa-check-square').addClass('fa-square');
+	}
+}
+
 function showNotices() {
 	var readKeys = Settings.readNotices.split(",");
 	var mainKeys = Object.keys(Notices);
@@ -342,6 +373,12 @@ function init_settings() {
 	}
 	showNotices();
 	
+	if (LS.get('pref_chat') === null) {
+		setChat(Settings.chat);
+	} else {
+		setChat(LS.get('pref_chat'));
+	}
+	
 	$('#quality-selector .dropdown-item a').unbind('click').on('click', function() {
 		setQuality($(this).data('value'));
 	});
@@ -352,6 +389,10 @@ function init_settings() {
 	
 	$('#goto-channel').unbind('click').on('click', function() {
 		Search.open();
+	});
+	
+	$('#goto-settings').unbind('click').on('click', function() {
+		SettingsWindow.open();
 	});
 	
 	// $('#goto-win-prompt').on('keypress', function(e) {
@@ -365,13 +406,20 @@ function init_settings() {
 		setChannel();
 	});
 	
-	$('#goto-win-backdrop').unbind('click').on('click', function() {
-		$('#goto-win-backdrop').fadeOut('fast');
-		$('#goto-win-inner').fadeOut('fast');
+	$('#settings-win-inner .lmd-close,#settings-win-backdrop').unbind('click').on('click', function() {
+		SettingsWindow.close();
+	});
+	
+	$('#goto-win-inner .lmd-close,#goto-win-backdrop').unbind('click').on('click', function() {
+		Search.close();
 	});
 	
 	$('#goto-auth').unbind('click').on('click', function() {
 		location.href = '?auth=1';
+	});
+	
+	$('#chat-checkbox').unbind('change').on('change', function() {
+		setChat($(this).prop('checked'));
 	});
 }
 
@@ -492,6 +540,10 @@ var ChannelPreview = {
 	loadChat: function(channel) {
 		$('#channel-preview-chat').html("<iframe frameborder='0' scrolling='no' src='https://www.twitch.tv/" +
 			channel + "/chat' height='100%' width='100%'></iframe>");
+			
+		if (Settings.chat) {
+			$('body').addClass('popup-sidebar-showing');
+		}
 	},
 	
 	show: function () {
@@ -512,7 +564,6 @@ var ChannelPreview = {
 			.on('click', function() {
 				var newLink = (location.href.indexOf('#') != -1) ? location.href + '&popout=1' :
 					location.href + '#&popout=1';
-				console.log("Popout Window:", newLink);
 				window.open(newLink, '_blank', 'menubar=0,status=0,scrollbars=0,toolbar=0,width=1280,height=480', false);
 				owner.destroyVideo();
 				owner.hide();
