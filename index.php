@@ -19,7 +19,7 @@ if (isset($_GET['_key'])){
 	exit;
 }
 
-$resVersion = 35;
+$resVersion = 37;
 // $resVersion = time() . "dev";
 
 $clru=urlencode($CONFIG['twitch']['home']);
@@ -189,10 +189,10 @@ $twitchAuth = check_auth();
 					</li>
 				</ul>
 			</div>
-			<div data-toggle='buttons'>
+			<div>
 				<label class='btn btn-default btn-block text-left'>
-					<input type='checkbox' autocomplete='off' id='chat-checkbox'>
-					<span class='fa fa-check-square fa-fw' id='chat-checkbox-icon'></span>
+					<input type='checkbox' autocomplete='off' id='chat-checkbox' class='hide'>
+					<span class='fa fa-square fa-fw' id='chat-checkbox-icon'></span>
 					Show Chat window by default
 				</label>
 			</div>

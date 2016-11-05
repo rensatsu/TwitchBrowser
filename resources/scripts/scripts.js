@@ -27,7 +27,7 @@ var Settings = {
 }
 
 var Notices = {
-	'o': "Switched to Twitch Embed API Player as InApp player, nonlinear volume control"
+	'p': "New settings window. Option to show chat by default"
 };
 
 var loadingAnimation = "<div class='loading'><img src='resources/images/ring.svg' alt='Loading' /><p>Loading...</p></div>";
@@ -328,13 +328,16 @@ function setChannel(a) {
 }
 
 function setChat(a) {
-	var val = a || false;
+	var val = (a === "true" || a === true) ? true : false;
 	
 	Settings.chat = val;
 	
 	LS.set('pref_chat', val);
 	
+	console.log("Changing chat status to: ", val);
+	
 	if (val) {
+		$('#chat-checkbox').prop('checked', 'checked');
 		$('#chat-checkbox-icon').removeClass('fa-square').addClass('fa-check-square');
 	} else {
 		$('#chat-checkbox-icon').removeClass('fa-check-square').addClass('fa-square');
