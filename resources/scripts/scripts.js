@@ -27,7 +27,9 @@ var Settings = {
 }
 
 var Notices = {
-	'p': "New settings window. Option to show chat by default"
+	'p': "New settings window. Option to show chat by default.",
+	'q': "Updated player controls. Everything hides and same style.",
+	'r': "Due to Twitch API changes, this application may not work. I'm trying to fix it, but most probably, it will be discontinued"
 };
 
 var loadingAnimation = "<div class='loading'><img src='resources/images/ring.svg' alt='Loading' /><p>Loading...</p></div>";
@@ -421,6 +423,26 @@ function init_settings() {
 		location.href = '?auth=1';
 	});
 	
+	$('#goto-logout').unbind('click').on('click', function() {
+		alert('Logging you out...');
+		$.ajax({
+			method: 'POST',
+			url: '?',
+			data: {
+				ajax: 1,
+				logout: 1
+			},
+			dataType: 'json',
+			timeout: 10000,
+			success: function() {
+				location.reload();
+			},
+			error: function() {
+				location.reload();
+			}
+		});
+	});
+	
 	$('#chat-checkbox').unbind('change').on('change', function() {
 		setChat($(this).prop('checked'));
 	});
@@ -429,6 +451,64 @@ function init_settings() {
 function showAuth() {
 	if (!userAuthorized) {
 		$('#goto-auth').removeClass('hide');
+	}
+}
+
+function fullscreenWin() {
+	if (
+		document.fullscreenEnabled || 
+		document.webkitFullscreenElement === null || 
+		document.mozFullScreenEnabled ||
+		document.msFullscreenEnabled
+	) {
+		var i = document.body;
+		if (i.requestFullscreen) {
+			i.requestFullscreen();
+		} else if (i.webkitRequestFullscreen) {
+			i.webkitRequestFullscreen();
+		} else if (i.mozRequestFullScreen) {
+			i.mozRequestFullScreen();
+		} else if (i.msRequestFullscreen) {
+			i.msRequestFullscreen();
+		}
+	} else {
+		if (document.exitFullscreen) {
+			document.exitFullscreen();
+		} else if (document.webkitExitFullscreen) {
+			document.webkitExitFullscreen();
+		} else if (document.mozCancelFullScreen) {
+			document.mozCancelFullScreen();
+		} else if (document.msExitFullscreen) {
+			document.msExitFullscreen();
+		}
+	}
+}
+
+function messagesHandler(e) {
+	if (e.origin.indexOf(location.hostname) != -1) {
+		var dataMatch = e.data.match(/twitch_browser_player=([\w\d\-_]*)/);
+		if (dataMatch) {
+			var action = dataMatch[1];
+			console.log('TwitchPlayer Message:', action);
+			
+			switch (action) {
+				case 'init':
+					$('#channel-preview .window-heading').css({display: 'none'});
+					break;
+				case 'chat':
+					$('body').toggleClass('popup-sidebar-showing');
+					break;
+				case 'popout':
+					ChannelPreview.popOut();
+					break;
+				case 'close':
+					history.go(-1);
+					break;
+				case 'fullscreen':
+					fullscreenWin();
+					break;
+			}
+		}
 	}
 }
 
@@ -463,6 +543,8 @@ $(document).ready(function(){
 	setInterval(function(){ checkHash(); }, 100);
 	setInterval(function(){ get_favourites(1); }, 90000);
 	Search.init();
+	
+	window.addEventListener('message', messagesHandler);
 });
 
 var ChannelPreview = {
@@ -538,6 +620,7 @@ var ChannelPreview = {
 		});
 		
 		$('#channel-preview-chat').html("");
+		$('#channel-preview .window-heading').css({display: 'block'});
 	},
 	
 	loadChat: function(channel) {
@@ -547,6 +630,15 @@ var ChannelPreview = {
 		if (Settings.chat) {
 			$('body').addClass('popup-sidebar-showing');
 		}
+	},
+	
+	popOut: function() {
+		var owner = this;
+		var newLink = (location.href.indexOf('#') != -1) ? location.href + '&popout=1' :
+			location.href + '#&popout=1';
+		window.open(newLink, '_blank', 'menubar=0,status=0,scrollbars=0,toolbar=0,width=1280,height=480', false);
+		owner.destroyVideo();
+		owner.hide();
 	},
 	
 	show: function () {
@@ -565,11 +657,7 @@ var ChannelPreview = {
 		this.elem.find('.window-heading-popout')
 			.unbind('click')
 			.on('click', function() {
-				var newLink = (location.href.indexOf('#') != -1) ? location.href + '&popout=1' :
-					location.href + '#&popout=1';
-				window.open(newLink, '_blank', 'menubar=0,status=0,scrollbars=0,toolbar=0,width=1280,height=480', false);
-				owner.destroyVideo();
-				owner.hide();
+				owner.popOut();
 			});
 		this.eventShow();
 	},

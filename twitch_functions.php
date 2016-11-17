@@ -7,18 +7,21 @@ function read_cache($id){
 	return link_cache_fetch('link_twitchbrowser_' . $id);
 }
 
-function check_auth_code($code){
+function check_auth_code($code) {
 	global $CONFIG;
 	
-	$tmp=twpost('https://api.twitch.tv/kraken/oauth2/token', array(
-		'client_id' => $CONFIG['twitch']['clid'],
+	$params = array(
+		'client_id'     => $CONFIG['twitch']['clid'],
 		'client_secret' => $CONFIG['twitch']['clsc'],
-		'grant_type' => 'authorization_code',
-		'redirect_uri' => urldecode($CONFIG['twitch']['home']),
-		'code' => $code
-	));
+		'grant_type'    => 'authorization_code',
+		'redirect_uri'  => urldecode($CONFIG['twitch']['home']),
+		'code'          => $code,
+		'state'         => null
+	);
 	
-	if (isset($tmp->access_token)){
+	$tmp = twpost('https://api.twitch.tv/kraken/oauth2/token', $params);
+	
+	if (isset($tmp->access_token)) {
 		$_SESSION['link_twapi_token']=$tmp->access_token;
 		setcookie('link_twapi_token', $tmp->access_token, time() + 30*24*60*60, '/');
 		return array(true, '');
@@ -27,6 +30,14 @@ function check_auth_code($code){
 	}
 	
 	return array(false, 'Unknown error');
+}
+
+function twitch_logout() {
+	$_SESSION['link_twapi_token'] = false;
+	unset($_SESSION['link_twapi_token']);
+	setcookie('link_twapi_token', '', time() - 30*24*60*60, '/');
+	
+	return array('result' => 'ok');
 }
 
 function get_auth_uri() {
@@ -42,7 +53,7 @@ function msg($type, $text){
 	return "<div class='alert alert-{$type}'>{$text}</div>";
 }
 
-function twpost($url,$data){
+function twpost($url, $data) {
 	global $useragent, $CONFIG;
 	$ch = curl_init(); 
 	curl_setopt($ch, CURLOPT_URL, $url);
@@ -53,7 +64,11 @@ function twpost($url,$data){
 	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
 	curl_setopt($ch, CURLOPT_POST, 1);
 	curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-	curl_setopt($ch, CURLOPT_HTTPHEADER, array("Client-ID: {$CONFIG['twitch']['clid']}"));
+	curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+			"Accept: application/vnd.twitchtv.v3+json",
+			"Client-ID: {$CONFIG['twitch']['clid']}"
+		)
+	);
 	curl_setopt($ch, CURLOPT_HEADER, 0);
 	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
 	$res = curl_exec($ch);
@@ -66,12 +81,16 @@ function twget($action, $age=300, $err_no_cache=false){
 	$url='https://api.twitch.tv/kraken/' . preg_replace('#^(\/)#', '', $action);
 	$key=	(isset($_SESSION['link_twapi_token'])) ? $_SESSION['link_twapi_token'] : 
 				(isset($_COOKIE['link_twapi_token']) ? $_COOKIE['link_twapi_token'] : false);
+				
+	// echo "<div class='well well-sm'>GET: {$action} | Key: {$key}</div>";
+	
 	$skey=($key) ? 'key=' . md5($key) : '';
 	$hash=md5('twapi' . $url . $skey);
 	$cache=($age) ? read_cache($hash) : false;
-	if ($cache){
+	
+	if ($cache) {
 		return $cache;
-	} else if (!$cache && $err_no_cache){
+	} else if (!$cache && $err_no_cache) {
 		return NULL;
 	} else {
 		$ch = curl_init();
@@ -84,29 +103,31 @@ function twget($action, $age=300, $err_no_cache=false){
 		curl_setopt($ch, CURLOPT_HEADER, 0);
 		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
 		curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-		if ($key){
+		if ($key) {
 			curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+														"Accept: application/vnd.twitchtv.v3+json",
 														"Client-ID: {$CONFIG['twitch']['clid']}",
 														"Authorization: OAuth {$key}"
 													));
 		} else {
-			curl_setopt($ch, CURLOPT_HTTPHEADER, array("Client-ID: {$CONFIG['twitch']['clid']}"));
+			curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+					"Accept: application/vnd.twitchtv.v3+json",
+					"Client-ID: {$CONFIG['twitch']['clid']}"
+				)
+			);
 		}
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
 		$res = curl_exec($ch);
 		curl_close($ch);
-		if ($res!==FALSE){
-			$jsdata=json_decode($res);
-			if ($jsdata!==FALSE){
-				if (!isset($jsdata->error)){
-					write_cache($hash, $jsdata, $age);
-				}
-				return $jsdata;
-			} else {
-				return false;
+		$jsdata = json_decode($res);
+		if ($jsdata !== FALSE) {
+			if (!isset($jsdata->error)) {
+				write_cache($hash, $jsdata, $age);
 			}
+			return $jsdata;
+		} else {
+			return false;
 		}
-		return false;
 	}
 }
 
@@ -348,34 +369,42 @@ function format_favourite($streams, $name, $display_name, $logo, $online){
 		</div>";
 }
 
-function get_favourites($ajax=false){
+function get_favourites($ajax = false) {
 	//$user=urlencode($user);
 	$tmp=twget('/user', false);
 	$header="<div id='favblock'><div class='panel panel-default'><div class='panel-heading'><a class='btn btn-default btn-xs btn-nav-back-small' href='javascript:' onClick='get_favourites();' title='Refresh'><span class='fa fa-refresh'></span></a> Followed channels</div>";
 	$footer="</div></div>";
-	if (isset($tmp->display_name)){
-		$user=$tmp->display_name;
+	if (isset($tmp->name)) {
+		$user=$tmp->name;
 		
 		if ($ajax){
 			$tmp=twget("/users/{$user}/follows/channels?limit=100", 600);
 		} else {
 			$tmp=twget("/users/{$user}/follows/channels?limit=100", 600, true);
 		}
-		if ($tmp!==NULL || $ajax){
-			if (isset($tmp->follows)){
-				$tmp2=twget("/streams/followed?limit=100", 60);
-				$streams=array();
-				if (isset($tmp2->streams)){
-					foreach($tmp2->streams as $stream){
-						//echo "<pre>"; var_dump($stream); echo "</pre>";
-						$streams[$stream->channel->name]=array('name'=>$stream->channel->name, 'viewers'=>$stream->viewers, 'game'=>$stream->game, 'status'=>isset($stream->channel->status) ? $stream->channel->status : '[Untitled broadcast]');
+		
+		if ($tmp!==NULL || $ajax) {
+			if (isset($tmp->follows)) {
+				$streams = array();
+				$tmp2 = twget("/streams/followed?limit=100&stream_type=live", 60);
+				if (isset($tmp2->streams)) {
+					foreach($tmp2->streams as $stream) {
+						$streams[$stream->channel->name] = array(
+							'id'      => $stream->channel->_id,
+							'name'    => $stream->channel->name,
+							'viewers' => $stream->viewers,
+							'game'    => $stream->game,
+							'status'  => isset($stream->channel->status) ? $stream->channel->status : '[Untitled broadcast]'
+						);
 					}
 				}
 
 				$list="<div class='follows-list noselect'>";
+				// var_dump($streams);
 				foreach($tmp->follows as $follow){
 					if (isset($follow->channel)){
-						$online=(isset($streams[$follow->channel->name]));
+						// echo "<pre>"; var_dump($follow); echo "</pre>";
+						$online = isset($streams[$follow->channel->name]);
 						if ($online){
 							$list.=format_favourite($streams, $follow->channel->name, $follow->channel->display_name, $follow->channel->logo, true);
 						}

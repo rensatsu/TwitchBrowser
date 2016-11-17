@@ -19,6 +19,10 @@
 	#controls {
 		margin-bottom: -100%;
 	}
+	
+	.heading-buttons {
+		opacity: 0;
+	}
 }
 
 #channel-player {
@@ -89,9 +93,27 @@
 		transition: .3s background-color;
 		cursor: pointer;
 		
+		&.auto-width {
+			width: auto;
+		}
+		
 		&:hover {
 			background: #484d4d;
 		}
+	}
+}
+
+.heading-buttons {
+	position: fixed;
+	top: 0;
+	right: 0;
+	margin: 10px !important;
+	opacity: 1;
+	transition: .2s opacity;
+	
+	button {
+		padding: 10px;
+		height: auto !important;
 	}
 }
 

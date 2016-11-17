@@ -19,17 +19,17 @@ if (isset($_GET['_key'])){
 	exit;
 }
 
-$resVersion = 37;
+$resVersion = 39;
 // $resVersion = time() . "dev";
 
 $clru=urlencode($CONFIG['twitch']['home']);
 $need=explode("/", $CONFIG['twitch']['home']);
-if (strtolower($_SERVER['HTTP_HOST'])!=mb_strtolower($need[2])){
+if (strtolower($_SERVER['HTTP_HOST']) != mb_strtolower($need[2])) {
 	header("Location: {$CONFIG['twitch']['home']}");
 	exit;
 }
 
-$content='';
+$content = '';
 
 if (isset($_REQUEST['code'])){
 	$result = check_auth_code($_REQUEST['code']);
@@ -37,8 +37,23 @@ if (isset($_REQUEST['code'])){
 		header("Location: ?");
 		exit;
 	} else {
-		$errorblock = $result[1];
+		$_SESSION['link_twapi_error'] = $result[1];
+		header("Location: ?");
+		exit;
 	}
+}
+
+if (!empty($_SESSION['link_twapi_error'])) {
+	$errorblock = $_SESSION['link_twapi_error'];
+	$_SESSION['link_twapi_error'] = false;
+	unset($_SESSION['link_twapi_error']);
+}
+
+if (isset($_POST['logout'])) {
+	$result = twitch_logout();
+	header("Content-type: application/json");
+	echo json_encode($result);
+	exit;
 }
 
 if (isset($_REQUEST['game'])){
@@ -195,6 +210,12 @@ $twitchAuth = check_auth();
 					<span class='fa fa-square fa-fw' id='chat-checkbox-icon'></span>
 					Show Chat window by default
 				</label>
+			</div>
+			<div>
+				<button class='btn btn-default btn-block text-left' id='goto-logout'>
+					<span class='fa fa-sign-out fa-fw'></span>
+					Log out
+				</button>
 			</div>
 		</div>
 		

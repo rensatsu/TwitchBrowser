@@ -43,7 +43,7 @@ var Controls = {
 		var d1 = this.hideTimeLast;
 		var d2 = new Date();
 		var filterInterval = 600;
-		var filterAmount = 20;
+		var filterAmount = 10;
 		
 		if (d2 - d1 < filterInterval && this.hideTimeFilter++ > filterAmount) {
 			this.hideTimer(false);
@@ -102,36 +102,6 @@ var Controls = {
 		}
 	},
 	
-	fullscreen: function() {
-		if (
-			document.fullscreenEnabled || 
-			document.webkitFullscreenElement === null || 
-			document.mozFullScreenEnabled ||
-			document.msFullscreenEnabled
-		) {
-			var i = document.body;
-			if (i.requestFullscreen) {
-				i.requestFullscreen();
-			} else if (i.webkitRequestFullscreen) {
-				i.webkitRequestFullscreen();
-			} else if (i.mozRequestFullScreen) {
-				i.mozRequestFullScreen();
-			} else if (i.msRequestFullscreen) {
-				i.msRequestFullscreen();
-			}
-		} else {
-			if (document.exitFullscreen) {
-				document.exitFullscreen();
-			} else if (document.webkitExitFullscreen) {
-				document.webkitExitFullscreen();
-			} else if (document.mozCancelFullScreen) {
-				document.mozCancelFullScreen();
-			} else if (document.msExitFullscreen) {
-				document.msExitFullscreen();
-			}
-		}
-	},
-	
 	volume: function(value, save, updateTrackBar) {
 		if (player.getMuted()) {
 			player.setMuted(false);
@@ -165,6 +135,10 @@ var Controls = {
 		}
 
 		this.hideTimer();
+	},
+	
+	messageParent: function(buttonType) {
+		parent.postMessage('twitch_browser_player=' + buttonType, '*');
 	}
 }
 
@@ -177,7 +151,19 @@ ge('btn-stop').addEventListener('click', function() {
 });
 
 ge('btn-screen').addEventListener('click', function() {
-	Controls.fullscreen();
+	Controls.messageParent('fullscreen');
+});
+
+ge('btn-popout').addEventListener('click', function() {
+	Controls.messageParent('popout');
+});
+
+ge('btn-chat').addEventListener('click', function() {
+	Controls.messageParent('chat');
+});
+
+ge('btn-close').addEventListener('click', function() {
+	Controls.messageParent('close');
 });
 
 ge('controls').addEventListener('mousemove', function(e) {
@@ -200,11 +186,20 @@ document.addEventListener('keypress', function(e) {
 	if (e.keyCode === 109) { // m
 		Controls.mute();
 		e.preventDefault();
+	} else if (e.keyCode === 99) { // c
+		Controls.messageParent('chat');
+		e.preventDefault();
+	} else if (e.keyCode === 111) { // o
+		Controls.messageParent('popout');
+		e.preventDefault();
+	} else if (e.keyCode === 113) { // q
+		Controls.messageParent('close');
+		e.preventDefault();
 	} else if (e.keyCode === 32 || e.keyCode === 112) { // space or p
 		Controls.togglePlayback();
 		e.preventDefault();
 	} else if (e.keyCode === 102) { // f
-		Controls.fullscreen();
+		Controls.messageParent('fullscreen');
 		e.preventDefault();
 	}
 });
@@ -225,7 +220,7 @@ ge('channel-overlay').addEventListener('click', function(e) {
 });
 
 ge('channel-overlay').addEventListener('dblclick', function(e) {
-	Controls.fullscreen();
+	Controls.messageParent('fullscreen');
 	return false;
 });
 
@@ -355,6 +350,8 @@ function init() {
 		i.focus();
 		document.body.removeChild(i);
 	}, 10);
+	
+	Controls.messageParent('init');
 }
 
 document.addEventListener('DOMContentLoaded', function() {
