@@ -42,21 +42,25 @@ var isPopout = false;
 
 var Search = {
 	performDelay: false,
+	isClosed: true,
 	
 	open: function(noClearInput) {
 		var noClearInput = noClearInput || false;
-		$('#goto-win-backdrop').fadeIn('fast');
-		$('#goto-win-inner').fadeIn('fast');
+		$('#goto-win-inner')
+			.css("display", "flex")
+		    .hide()
+			.fadeIn('fast');
 		if (!noClearInput) {
 			$('#goto-win-prompt').val('');
 		}
+		this.isClosed = false;
 		$('#goto-win-prompt').focus();
 		$('#search-results').html('');
 	},
 	
 	close: function() {
-		$('#goto-win-backdrop').fadeOut('fast');
 		$('#goto-win-inner').fadeOut('fast');
+		this.isClosed = true;
 	},
 	
 	changeEvent: function(el) {
@@ -91,8 +95,11 @@ var Search = {
 			},
 			dataType: 'json',
 			timeout: 10000,
-			success: function(d){
-				owner.open(true);
+			success: function(d) {
+				if (owner.isClosed) {
+					owner.open(true);
+				}
+				
 				$('#search-results').scrollTop(0).html('');
 				
 				if (d.channels.length > 0) {
@@ -125,8 +132,6 @@ var Search = {
 				} else {
 					$('#search-results').append("<div id='search-results-games'><h4>Games</h4><p>Not found</p></div>");
 				}
-				
-				// console.log(d);
 			}
 		});
 	}
@@ -134,12 +139,13 @@ var Search = {
 
 var SettingsWindow = {
 	open: function() {
-		$('#settings-win-backdrop').fadeIn('fast');
-		$('#settings-win-inner').fadeIn('fast');
+		$('#settings-win-inner')
+			.css("display", "flex")
+		    .hide()
+			.fadeIn('fast');
 	},
 	
 	close: function() {
-		$('#settings-win-backdrop').fadeOut('fast');
 		$('#settings-win-inner').fadeOut('fast');
 	},
 	
@@ -294,8 +300,8 @@ function checkHash(){
 function setQuality(quality) {
 	Settings.quality = quality;
 	
-	$('#quality-selector .dropdown-item').removeClass('active');
-	$('#quality-selector a[data-value="' + quality + '"]').parent().addClass('active');
+	$('#quality-selector-container label').removeClass('active');
+	$('#quality-selector-container input[data-value="' + quality + '"]').prop('checked', 'checked').parent().addClass('active');
 	
 	LS.set('pref_quality', quality);
 }
@@ -304,8 +310,8 @@ function setPlayer(player) {
 	if (supportedPlayers.indexOf(player) > -1) {
 		Settings.player = player;
 		
-		$('#player-selector .dropdown-item').removeClass('active');
-		$('#player-selector a[data-value="' + player + '"]').parent().addClass('active');
+		$('#player-selector-container label').removeClass('active');
+		$('#player-selector-container input[data-value="' + player + '"]').prop('checked', 'checked').parent().addClass('active');
 		
 		if (player === 'inapp') {
 			$('.window-heading-stream').hide();
@@ -384,11 +390,11 @@ function init_settings() {
 		setChat(LS.get('pref_chat'));
 	}
 	
-	$('#quality-selector .dropdown-item a').unbind('click').on('click', function() {
+	$('#quality-selector-container input').unbind('change').on('change', function() {
 		setQuality($(this).data('value'));
 	});
 	
-	$('#player-selector .dropdown-item a').unbind('click').on('click', function() {
+	$('#player-selector-container input').unbind('change').on('change', function() {
 		setPlayer($(this).data('value'));
 	});
 	
@@ -405,13 +411,26 @@ function init_settings() {
 	// 		e.preventDefault();
 	// 		setChannel();
 	// 	}
-	// });.
+	// });
 	
 	$('#goto-win-confirm').unbind('click').on('click', function() {
 		setChannel();
 	});
 	
-	$('#settings-win-inner .lmd-close,#settings-win-backdrop').unbind('click').on('click', function() {
+	lmdWindows = document.querySelectorAll('.lmd-window');
+	for (i = 0; i < lmdWindows.length; i++) {
+		lmdWindows[i].addEventListener('click', function(e) {
+			if (e.target.id == 'settings-win-inner') {
+				e.preventDefault();
+				SettingsWindow.close();
+			} else if (e.target.id == 'goto-win-inner') {
+				e.preventDefault();
+				Search.close();
+			}
+		});
+	}
+	
+	$('#settings-win-inner .lmd-close').unbind('click').on('click', function() {
 		SettingsWindow.close();
 	});
 	
@@ -493,7 +512,6 @@ function messagesHandler(e) {
 			
 			switch (action) {
 				case 'init':
-					$('#channel-preview .window-heading').css({display: 'none'});
 					break;
 				case 'chat':
 					$('body').toggleClass('popup-sidebar-showing');
@@ -518,8 +536,6 @@ $(document).ready(function(){
 	
 	if (location.hash.indexOf('&popout=1') != -1) {
 		isPopout = true;
-		$('.window-heading-close').hide();
-		$('.window-heading-popout').hide();
 	}
 
 	if ((hash === '' || hash === '#') && $('#page-popular-games').length > 0) {
@@ -589,7 +605,8 @@ var ChannelPreview = {
 		var frame = document.createElement('iframe');
 		var random = Math.floor(Math.random() * 1000);
 		frame.setAttribute('allowFullScreen', '');
-		frame.src = 'player.php?channel=' + this.channel + '&quality=' + quality + '&_=' + random;
+		popOutAttr = isPopout ? 1 : 0;
+		frame.src = 'player.php?channel=' + this.channel + '&quality=' + quality + '&popout=' + popOutAttr + '&_=' + random;
 		videoOwner.appendChild(frame);
 		LPArray.push(frame);
 		/* - */
@@ -669,8 +686,7 @@ var ChannelPreview = {
 		this.elem.animate({ opacity: 0}, 'fast', function() {
 			$(this).css({ display: 'none' });
 		});
-		// location.hash = oldhash;
-		// oldhash = 'channel=' + this.channel;
+
 		this.channel = false;
 		$('body').removeClass('popup-sidebar-showing');
 		this.eventHide();
@@ -683,7 +699,6 @@ var ChannelPreview = {
 			this.channel = channel[1];
 			location.hash = "channel=" + channel[1];
 			this.elem.find('.window-heading-chat').unbind('click').on('click', function() {
-				// location.href = 'irc://irc.twitch.tv:443/' + owner.channel;
 				$('body').toggleClass('popup-sidebar-showing');
 			});
 			

@@ -19,7 +19,7 @@ if (isset($_GET['_key'])){
 	exit;
 }
 
-$resVersion = 39;
+$resVersion = 41;
 // $resVersion = time() . "dev";
 
 $clru=urlencode($CONFIG['twitch']['home']);
@@ -103,20 +103,6 @@ $twitchAuth = check_auth();
 	</head>
 	<body class='twitch-browser'>
 		<div class='window' id='channel-preview' tabindex='-1'>
-			<div class='window-heading btn-toolbar'>
-				<button class='btn btn-danger pull-right window-heading-close' type='button' title='Close'>
-					<span class='fa fa-times'></span>
-				</button>
-				<button class='btn btn-primary pull-right window-heading-chat' type='button' title='Toggle Chat'>
-					<span class='fa fa-comments'></span>
-				</button>
-				<button class='btn btn-primary pull-right window-heading-stream' type='button' title='Open in Livestreamer'>
-					<span class='fa fa-arrows-alt'></span>
-				</button>
-				<button class='btn btn-primary pull-right window-heading-popout' type='button' title='Open in New Window'>
-					<span class='fa fa-external-link'></span>
-				</button>
-			</div>
 			<div class='window-sidebar' id='channel-preview-chat'></div>
 			<div class='window-body' id='channel-preview-body'></div>
 		</div>
@@ -150,72 +136,77 @@ $twitchAuth = check_auth();
 			<span class='copy bottom-bar-item'>&copy; LinkSoft <? echo date('Y'); ?> / v0.<?=$resVersion?></span>
 		</div>
 		
-		<div id='goto-win-backdrop' class='lmd-backdrop'></div>
 		<div id='goto-win-inner' class='lmd-window'>
-			<h3>Search<button class='btn btn-sm btn-danger pull-right lmd-close'><span class='fa fa-times fa-fw'></span></button></h3>
-			<div>Enter search query or twitch link:</div>
-			<div><input type='text' id='goto-win-prompt' /></div>
-			<div>
-				<button id='goto-win-confirm' class='btn btn-primary'>
-					Go <span class='fa fa-arrow-right'></span>
-				</button>
+			<div class='lmd-inner'>
+				<h3>Search<button class='btn btn-sm btn-danger pull-right lmd-close'><span class='fa fa-times fa-fw'></span></button></h3>
+				<div class='lmd-content'>
+					<div>Enter channel title, game title or twitch link:</div>
+					<div><input type='text' id='goto-win-prompt' class='form-control' /></div>
+					<div>
+						<button id='goto-win-confirm' class='btn btn-primary'>
+							Go <span class='fa fa-arrow-right'></span>
+						</button>
+					</div>
+					<div id='search-results'></div>
+				</div>
 			</div>
-			<div id='search-results'></div>
 		</div>
 		
-		<div id='settings-win-backdrop' class='lmd-backdrop'></div>
 		<div id='settings-win-inner' class='lmd-window'>
-			<h3>Settings<button class='btn btn-sm btn-danger pull-right lmd-close'><span class='fa fa-times fa-fw'></span></button></h3>
-			<div class='dropdown' id='quality-selector'>
-				<button class='btn btn-default btn-block dropdown-toggle text-left' data-toggle='dropdown' type='button' title='Quality'>
-					<span class='fa fa-signal fa-fw'></span> Preferred Stream Quality
-				</button>
-				<ul class='dropdown-menu'>
-					<li class='dropdown-item'>
-						<a href='javascript:' class='quality-selector' data-value='audio,mobile,low,medium,high,source'>Audio only</a>
-					</li>
-					<li class='dropdown-item'>
-						<a href='javascript:' class='quality-selector' data-value='mobile,low,medium,high,source'>Mobile</a>
-					</li>
-					<li class='dropdown-item'>
-						<a href='javascript:' class='quality-selector' data-value='low,medium,high,source'>Low</a>
-					</li>
-					<li class='dropdown-item'>
-						<a href='javascript:' class='quality-selector' data-value='medium,high,source'>Medium</a>
-					</li>
-					<li class='dropdown-item'>
-						<a href='javascript:' class='quality-selector' data-value='high,source'>High</a>
-					</li>
-					<li class='dropdown-item'>
-						<a href='javascript:' class='quality-selector' data-value='source'>Source</a>
-					</li>
-				</ul>
-			</div>
-			<div class='dropdown' id='player-selector'>
-				<button class='btn btn-default btn-block dropdown-toggle text-left' data-toggle='dropdown' type='button' title='Player'>
-					<span class='fa fa-cog fa-fw'></span> Player Application
-				</button>
-				<ul class='dropdown-menu'>
-					<li class='dropdown-item'>
-						<a href='javascript:' class='player-selector' data-value='inapp'>In-app</a>
-					</li>
-					<li class='dropdown-item'>
-						<a href='javascript:' class='player-selector' data-value='livestreamer'>Livestreamer</a>
-					</li>
-				</ul>
-			</div>
-			<div>
-				<label class='btn btn-default btn-block text-left'>
-					<input type='checkbox' autocomplete='off' id='chat-checkbox' class='hide'>
-					<span class='fa fa-square fa-fw' id='chat-checkbox-icon'></span>
-					Show Chat window by default
-				</label>
-			</div>
-			<div>
-				<button class='btn btn-default btn-block text-left' id='goto-logout'>
-					<span class='fa fa-sign-out fa-fw'></span>
-					Log out
-				</button>
+			<div class='lmd-inner'>
+				<h3>Settings<button class='btn btn-sm btn-danger pull-right lmd-close'><span class='fa fa-times fa-fw'></span></button></h3>
+				<div class='lmd-content'>
+					<div>
+						<h4>Preferred Stream Quality</h4>
+						<div class='btn-group' data-toggle='buttons' id='quality-selector-container'>
+							<label class='btn btn-default'>
+								<input type='radio' name='quality-selector' autocomplete='off' data-value='audio,mobile,low,medium,high,source'> Audio only
+							</label>
+							<label class='btn btn-default'>
+								<input type='radio' name='quality-selector' autocomplete='off' data-value='mobile,low,medium,high,source'> Mobile
+							</label>
+							<label class='btn btn-default'>
+								<input type='radio' name='quality-selector' autocomplete='off' data-value='low,medium,high,source'> Low
+							</label>
+							<label class='btn btn-default'>
+								<input type='radio' name='quality-selector' autocomplete='off' data-value='medium,high,source'> Medium
+							</label>
+							<label class='btn btn-default'>
+								<input type='radio' name='quality-selector' autocomplete='off' data-value='high,source'> High
+							</label>
+							<label class='btn btn-default active'>
+								<input type='radio' name='quality-selector' autocomplete='off' data-value='source' checked> Source
+							</label>
+						</div>
+					</div>
+					<div>
+						<h4>Player Application</h4>
+						<div class='btn-group' data-toggle='buttons' id='player-selector-container'>
+							<label class='btn btn-default active'>
+								<input type='radio' name='player-selector' autocomplete='off' data-value='inapp' checked> In-app
+							</label>
+							<label class='btn btn-default'>
+								<input type='radio' name='player-selector' autocomplete='off' data-value='livestreamer'> Livestreamer
+							</label>
+						</div>
+					</div>
+					<div>
+						<h4>Other Settings</h4>
+					</div>
+					<div>
+						<label class='btn btn-default btn-block text-left'>
+							<input type='checkbox' autocomplete='off' id='chat-checkbox' class='hide'>
+							<span class='fa fa-square fa-fw' id='chat-checkbox-icon'></span>
+							Show Chat window by default
+						</label>
+					</div>
+					<div>
+						<button class='btn btn-default btn-block text-left' id='goto-logout'>
+							<span class='fa fa-sign-out fa-fw'></span>
+							Log out
+						</button>
+					</div>
+				</div>
 			</div>
 		</div>
 		

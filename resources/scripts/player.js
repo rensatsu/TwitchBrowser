@@ -252,8 +252,8 @@ var MessageBar = {
 	show: function(text, fatal) {
 		if (fatal) {
 			Controls.stop(true);
-			Controls.initComplete = false;
-			ge('controls').style.display = 'none';
+			// Controls.initComplete = false;
+			// ge('controls').style.display = 'none';
 			ge('message').className = 'fatal';
 		} else {
 			ge('message').className = 'nonfatal';
@@ -352,6 +352,11 @@ function init() {
 	}, 10);
 	
 	Controls.messageParent('init');
+	
+	if (location.href.indexOf('&popout=1') != -1) {
+		document.getElementById('btn-popout').style.display = 'none';
+		document.getElementById('btn-close').style.display = 'none';
+	}
 }
 
 document.addEventListener('DOMContentLoaded', function() {

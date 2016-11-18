@@ -10,7 +10,7 @@ $quality = isset($_REQUEST['quality']) ? htmlspecialchars($_REQUEST['quality']) 
 $quality = ($quality == 'source') ? 'chunked' : $quality;
 $quality = ($quality == 'audio') ? 'mobile' : $quality;
 
-$resVersion = 17;
+$resVersion = 18;
 // $resVersion = time() . "dev";
 
 ?><!DOCTYPE html>
