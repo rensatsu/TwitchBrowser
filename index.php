@@ -19,7 +19,7 @@ if (isset($_GET['_key'])){
 	exit;
 }
 
-$resVersion = 41;
+$resVersion = 43;
 // $resVersion = time() . "dev";
 
 $clru=urlencode($CONFIG['twitch']['home']);
@@ -102,6 +102,37 @@ $twitchAuth = check_auth();
 		<meta name='viewport' content='width=device-width, initial-scale=1.0, user-scalable=no'>
 	</head>
 	<body class='twitch-browser'>
+		<nav class='navbar navbar-default navbar-fixed-top'>
+			<div class='container-fluid'>
+				<div class='navbar-header'>
+					<a class='navbar-brand ajax' href='?main=1'>Twitch Browser</a>
+				</div>
+				<ul class='nav navbar-nav navbar-right'>
+					<li>
+						<p class='navbar-text noselect'>v0.<?=$resVersion?></p>
+					</li>
+					<li>
+						<a href='javascript:' id='goto-settings'>
+							<span class='fa fa-cog'></span>
+							Settings
+						</a>
+					</li>
+					<li>
+						<a href='javascript:' id='goto-channel'>
+							<span class='fa fa-search'></span>
+							Search
+						</a>
+					</li>
+					<li class='hide'>
+						<a href='javascript:' id='goto-auth'>
+							<span class='fa fa-user-circle'></span>
+							Authorization
+						</a>
+					</li>
+				</ul>
+			</div>
+		</nav>
+		
 		<div class='window' id='channel-preview' tabindex='-1'>
 			<div class='window-sidebar' id='channel-preview-chat'></div>
 			<div class='window-body' id='channel-preview-body'></div>
@@ -123,6 +154,7 @@ $twitchAuth = check_auth();
 		</div>
 
 		<div id='notifications' class='noselect'></div>
+		<!--
 		<div id='bottom-bar' class='noselect'>
 			<button class='btn btn-xs btn-default bottom-bar-item' type='button' id='goto-settings' title='Application Settings'>
 				<span class='fa fa-cog'></span>
@@ -135,6 +167,7 @@ $twitchAuth = check_auth();
 			</button>
 			<span class='copy bottom-bar-item'>&copy; LinkSoft <? echo date('Y'); ?> / v0.<?=$resVersion?></span>
 		</div>
+		-->
 		
 		<div id='goto-win-inner' class='lmd-window'>
 			<div class='lmd-inner'>

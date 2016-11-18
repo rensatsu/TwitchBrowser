@@ -469,7 +469,7 @@ function init_settings() {
 
 function showAuth() {
 	if (!userAuthorized) {
-		$('#goto-auth').removeClass('hide');
+		$('#goto-auth').parent().removeClass('hide');
 	}
 }
 

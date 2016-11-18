@@ -4,6 +4,8 @@
 @-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
 @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
 
+$navbarHeight: 30px;
+
 .loading img {
 	-webkit-animation: spin 2s linear infinite;
 	-moz-animation: spin 2s linear infinite;
@@ -111,24 +113,24 @@ a {
     -webkit-transition: border .2s ease-in-out;
     -o-transition: border .2s ease-in-out;
     transition: border .2s ease-in-out;
-}
-
-.thumbnail > img, .thumbnail a > img {
-	border-radius: 2px 2px 0 0;
-	margin-left: auto;
-    margin-right: auto;
-	display: block;
-    max-width: 100%;
-    height: auto;
-}
-
-.thumbnail .caption {
-	padding: 5px;
-}
-
-.thumbnail .caption p {
-	margin: 0;
-	padding: 5px 0 0;
+	
+	& > img, & a > img {
+		border-radius: 2px 2px 0 0;
+		margin-left: auto;
+		margin-right: auto;
+		display: block;
+		max-width: 100%;
+		height: auto;
+	}
+	
+	.caption {
+		padding: 5px;
+		
+		p {
+			margin: 0;
+			padding: 5px 0 0;
+		}
+	}
 }
 
 #favblock .list-group-item .fav-avatar {
@@ -188,11 +190,11 @@ a {
 .btn-default {
 	background-color: #fff;
 	border-color: #aaa;
-}
-
-.btn-default:hover, .btn-default:focus, .btn-default:active, .btn-default.active {
-	background-color: #eee;
-	border-color: #999;
+	
+	&:hover, &:focus, &:active, &.active {
+		background-color: #eee;
+		border-color: #999;
+	}
 }
 
 .btn-primary {
@@ -214,10 +216,10 @@ a {
 
 .nav>li>a {
 	transition:.3s background-color;
-}
-
-.nav>li>a:hover, .nav>li>a:focus {
-	background: rgba(65, 170, 229, 0.24);
+	
+	&:hover, &:focus {
+		background: rgba(65, 170, 229, 0.24);
+	}
 }
 
 .panel-default > .panel-heading {
@@ -234,11 +236,30 @@ label[for] {
 }
 /* actual css for app */
 
+.navbar {
+	min-height: $navbarHeight;
+	
+	.navbar-brand {
+		height: $navbarHeight;
+		padding: (($navbarHeight - 10) / 2) (($navbarHeight - 10) / 2);
+	}
+	
+	.navbar-text {
+		margin-top: ($navbarHeight - 10) / 2;
+		margin-bottom: ($navbarHeight - 10) / 2;
+	}
+	
+	.navbar-nav>li>a {
+		padding-top: ($navbarHeight - 10) / 2;
+		padding-bottom: ($navbarHeight - 10) / 2;
+	}
+}
+
 #page, #page-sidebar {
 	height: 100%;
 	position: fixed;
 	top: 0;
-	padding: 5px;
+	padding: ($navbarHeight + 15) 5px 5px 5px;
 }
 
 #page {
