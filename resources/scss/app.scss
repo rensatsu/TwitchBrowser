@@ -255,6 +255,14 @@ label[for] {
 	}
 }
 
+.navbar-default {
+	background: #eee linear-gradient(#ddd, #eee);
+}
+
+.navbar-fixed-top {
+	z-index: 1;
+}
+
 #page, #page-sidebar {
 	height: 100%;
 	position: fixed;
