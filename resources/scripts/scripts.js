@@ -28,8 +28,7 @@ var Settings = {
 
 var Notices = {
 	'p': "New settings window. Option to show chat by default.",
-	'q': "Updated player controls. Everything hides and same style.",
-	'r': "Due to Twitch API changes, this application may not work. I'm trying to fix it, but most probably, it will be discontinued"
+	'r': "Due to Twitch API changes, this application may not work. In the future, most probably, it will be discontinued"
 };
 
 var loadingAnimation = "<div class='loading'><img src='resources/images/ring.svg' alt='Loading' /><p>Loading...</p></div>";
@@ -656,14 +655,11 @@ var ChannelPreview = {
 		var owner = this;
 		$('body').css({ overflow: 'hidden' });
 		this.showing = true;
-		this.elem.css({ opacity: 0, display: 'flex' });
-		this.elem.animate({ opacity: 1 }, 'fast');
+		this.elem.addClass('open');
 		this.elem.find('.window-heading-close')
 			.unbind('click')
 			.on('click', function() {
 				history.go(-1);
-				// owner.destroyVideo();
-				// owner.hide();
 			});
 		this.elem.find('.window-heading-popout')
 			.unbind('click')
@@ -676,10 +672,7 @@ var ChannelPreview = {
 	hide: function () {
 		this.showing = false;
 		$('body').css({ overflow: 'auto' });
-		this.elem.css({ opacity: 1, display: 'flex' });
-		this.elem.animate({ opacity: 0}, 'fast', function() {
-			$(this).css({ display: 'none' });
-		});
+		this.elem.removeClass('open');
 
 		this.channel = false;
 		$('body').removeClass('popup-sidebar-showing');

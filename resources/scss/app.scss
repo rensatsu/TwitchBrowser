@@ -525,6 +525,11 @@ label[for] {
 	display: none;
 	flex-direction: column;
 	outline: 0;
+	
+	&.open {
+		display: flex;
+		@extend .lmd-animate-fade;
+	}
 }
 
 .window-heading {

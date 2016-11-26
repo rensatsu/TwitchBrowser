@@ -19,12 +19,12 @@ if (isset($_GET['_key'])){
 	exit;
 }
 
-$resVersion = 47;
+$resVersion = 48;
 // $resVersion = time() . "dev";
 
 $clru=urlencode($CONFIG['twitch']['home']);
 $need=explode("/", $CONFIG['twitch']['home']);
-if (strtolower($_SERVER['HTTP_HOST']) != mb_strtolower($need[2])) {
+if (strtolower($_SERVER['HTTP_HOST']) != strtolower($need[2])) {
 	header("Location: {$CONFIG['twitch']['home']}");
 	exit;
 }
