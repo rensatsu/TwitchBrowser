@@ -135,7 +135,7 @@ function check_auth() {
 	$tmp=twget('/user', false);
 	$header="<div id='favblock'><div class='panel panel-default'><div class='panel-heading'><a class='btn btn-default btn-xs btn-nav-back-small' href='javascript:' onClick='get_favourites();' title='Refresh'><span class='fa fa-refresh'></span></a> Followed channels</div>";
 	$footer="</div></div>";
-	return isset($tmp->display_name);
+	return isset($tmp->display_name) ? $tmp->display_name : false;
 }
 
 function replace_http($link){
@@ -170,7 +170,7 @@ function get_top_games($onlyPanel = false, $onlyGames = false, $limit=12, $offse
 			foreach($tmp->top as $game){
 				if (isset($game->game->name) && trim($game->game->name)!=''){
 					$vwr=($game->viewers > 1) ? 'viewers' : 'viewer';
-					$chl=($game->channels > 1) ? 'live channels' : 'live channel';
+					$chl=($game->channels > 1) ? 'channels' : 'channel';
 					$ueg=urlencode($game->game->name);
 					$gname=str_replace("'", "&#39;", $game->game->name);
 					
@@ -182,7 +182,7 @@ function get_top_games($onlyPanel = false, $onlyGames = false, $limit=12, $offse
 									<a href='?game={$ueg}' class='ajax'><img src='" . replace_http($game->game->box->large) . "'></a>
 									<div class='caption'>
 										<a href='?game={$ueg}' class='game-title ajax' title='{$gname}'>{$gname}</a>
-										<p title='Live channels'>
+										<p title='Channels'>
 											<span class='fa fa-user fa-fw'></span> {$t_chn}
 										</p>
 										<p title='Viewers'>
@@ -372,7 +372,7 @@ function format_favourite($streams, $name, $display_name, $logo, $online){
 function get_favourites($ajax = false) {
 	//$user=urlencode($user);
 	$tmp=twget('/user', false);
-	$header="<div id='favblock'><div class='panel panel-default'><div class='panel-heading'><a class='btn btn-default btn-xs btn-nav-back-small' href='javascript:' onClick='get_favourites();' title='Refresh'><span class='fa fa-refresh'></span></a> Followed channels</div>";
+	$header="<div id='favblock'><div class='panel panel-default'><div class='panel-heading'><a class='btn btn-default btn-xs btn-nav-back-small' href='javascript:' onClick='get_favourites();' title='Refresh'><span class='fa fa-refresh'></span></a> Following</div>";
 	$footer="</div></div>";
 	if (isset($tmp->name)) {
 		$user=$tmp->name;

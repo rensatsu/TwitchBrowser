@@ -4,7 +4,7 @@
 @-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
 @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
 
-$navbarHeight: 30px;
+$navbarHeight: 24px;
 
 .loading img {
 	-webkit-animation: spin 2s linear infinite;
@@ -223,8 +223,7 @@ a {
 }
 
 .panel-default > .panel-heading {
-	background: #f5f5f5 linear-gradient(#fff 5%, #eee 50%, #ddd);
-	text-shadow: 1px 1px 0px #fff;
+	background: #ddd linear-gradient(#ddd, #eee);
 }
 
 .label {
@@ -397,15 +396,58 @@ label[for] {
 	margin: 0 3px 0 0;
 }
 
-.lmd-backdrop {
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	background: rgba(0, 0, 0, .5);
-	z-index: 9998;
-	display: none;
+.lmd-animate-zoom {
+	-webkit-animation: animatezoom .3s cubic-bezier(.7, .1, .15, 1);
+	animation: animatezoom .3s cubic-bezier(.7, .1, .15, 1);
+}
+
+.lmd-animate-fade {
+	-webkit-animation: animatefade .15s ease-in;
+	animation: animatefade .15s ease-in;
+}
+
+@-webkit-keyframes animatezoom {
+	from {
+		-webkit-transform: scale(.7);
+		opacity: 0;
+	}
+	
+	to {
+		-webkit-transform: scale(1);
+		opacity: 1;
+	}
+}
+
+@keyframes animatezoom {
+	from {
+		transform: scale(.7);
+		opacity: 0;
+	}
+	
+	to {
+		transform: scale(1);
+		opacity: 1;
+	}
+}
+
+@-webkit-keyframes animatefade {
+	from {
+		opacity: 0;
+	}
+	
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes animatefade {
+	from {
+		opacity: 0;
+	}
+	
+	to {
+		opacity: 1;
+	}
 }
 
 .lmd-window {
@@ -416,12 +458,21 @@ label[for] {
 	height: 100%;
 	z-index: 9999;
 	
-	background: rgba(0, 0, 0, .5);
+	background-color: rgba(0, 0, 0, .5);
 
 	display: none;
 	
 	align-items: center;
 	justify-content: center;
+	
+	&.open {
+		display: flex;
+		@extend .lmd-animate-fade;
+
+		.lmd-inner {
+			@extend .lmd-animate-zoom;
+		}
+	}
 	
 	.lmd-inner {
 		font-size: 120%;

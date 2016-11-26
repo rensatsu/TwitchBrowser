@@ -19,7 +19,7 @@ if (isset($_GET['_key'])){
 	exit;
 }
 
-$resVersion = 44;
+$resVersion = 47;
 // $resVersion = time() . "dev";
 
 $clru=urlencode($CONFIG['twitch']['home']);
@@ -91,6 +91,12 @@ $errorblock=(isset($errorblock)) ? msg('error', $errorblock) : '';
 $admin=isLoggedIn();
 $twitchAuth = check_auth();
 
+$userNameField = '';
+if ($twitchAuth) {
+	$showUserNameAs = htmlspecialchars($twitchAuth);
+	$userNameField = "<li><p class='navbar-text'><span class='fa fa-user-circle'></span> {$showUserNameAs}</p></li>";
+}
+
 ?><!DOCTYPE html>
 <html>
 	<head>
@@ -102,14 +108,14 @@ $twitchAuth = check_auth();
 		<meta name='viewport' content='width=device-width, initial-scale=1.0, user-scalable=no'>
 	</head>
 	<body class='twitch-browser'>
-		<nav class='navbar navbar-default navbar-fixed-top'>
+		<nav class='navbar navbar-default navbar-fixed-top noselect'>
 			<div class='container-fluid'>
 				<div class='navbar-header'>
 					<a class='navbar-brand ajax' href='?main=1'>Twitch Browser</a>
 				</div>
 				<ul class='nav navbar-nav navbar-right'>
 					<li>
-						<p class='navbar-text noselect'>v0.<?=$resVersion?></p>
+						<p class='navbar-text'>v0.<?=$resVersion?></p>
 					</li>
 					<li>
 						<a href='javascript:' id='goto-settings'>
@@ -129,6 +135,7 @@ $twitchAuth = check_auth();
 							Authorization
 						</a>
 					</li>
+					<?=$userNameField?>
 				</ul>
 			</div>
 		</nav>
@@ -154,24 +161,15 @@ $twitchAuth = check_auth();
 		</div>
 
 		<div id='notifications' class='noselect'></div>
-		<!--
-		<div id='bottom-bar' class='noselect'>
-			<button class='btn btn-xs btn-default bottom-bar-item' type='button' id='goto-settings' title='Application Settings'>
-				<span class='fa fa-cog'></span>
-			</button>
-			<button class='btn btn-xs btn-default bottom-bar-item' type='button' id='goto-channel' title='Search game or channel'>
-				<span class='fa fa-search'></span>
-			</button>
-			<button class='btn btn-xs btn-primary bottom-bar-item hide' type='button' id='goto-auth' title='Authorize'>
-				<span class='fa fa-user-circle'></span>
-			</button>
-			<span class='copy bottom-bar-item'>&copy; LinkSoft <? echo date('Y'); ?> / v0.<?=$resVersion?></span>
-		</div>
-		-->
 		
 		<div id='goto-win-inner' class='lmd-window'>
 			<div class='lmd-inner'>
-				<h3>Search<button class='btn btn-sm btn-danger pull-right lmd-close'><span class='fa fa-times fa-fw'></span></button></h3>
+				<h3 class='noselect'>
+					Search
+					<button class='btn btn-sm btn-danger pull-right lmd-close'>
+						<span class='fa fa-times fa-fw'></span>
+					</button>
+				</h3>
 				<div class='lmd-content'>
 					<div>Enter channel title, game title or twitch link:</div>
 					<div><input type='text' id='goto-win-prompt' class='form-control' /></div>
@@ -187,7 +185,12 @@ $twitchAuth = check_auth();
 		
 		<div id='settings-win-inner' class='lmd-window'>
 			<div class='lmd-inner'>
-				<h3>Settings<button class='btn btn-sm btn-danger pull-right lmd-close'><span class='fa fa-times fa-fw'></span></button></h3>
+				<h3 class='noselect'>
+					Settings
+					<button class='btn btn-sm btn-danger pull-right lmd-close'>
+						<span class='fa fa-times fa-fw'></span>
+					</button>
+				</h3>
 				<div class='lmd-content'>
 					<div>
 						<h4>Preferred Stream Quality</h4>

@@ -46,10 +46,7 @@ var Search = {
 	
 	open: function(noClearInput) {
 		var noClearInput = noClearInput || false;
-		$('#goto-win-inner')
-			.css("display", "flex")
-		    .hide()
-			.fadeIn('fast');
+		$('#goto-win-inner').addClass('open');
 		if (!noClearInput) {
 			$('#goto-win-prompt').val('');
 		}
@@ -59,7 +56,7 @@ var Search = {
 	},
 	
 	close: function() {
-		$('#goto-win-inner').fadeOut('fast');
+		$('#goto-win-inner').removeClass('open');
 		this.isClosed = true;
 	},
 	
@@ -139,14 +136,11 @@ var Search = {
 
 var SettingsWindow = {
 	open: function() {
-		$('#settings-win-inner')
-			.css("display", "flex")
-		    .hide()
-			.fadeIn('fast');
+		$('#settings-win-inner').addClass('open');
 	},
 	
 	close: function() {
-		$('#settings-win-inner').fadeOut('fast');
+		$('#settings-win-inner').removeClass('open');
 	},
 	
 	init: function() {
