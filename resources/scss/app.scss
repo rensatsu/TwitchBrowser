@@ -1,14 +1,10 @@
 @import url('https://fonts.googleapis.com/css?family=Play');
-
-@-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
-@-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
-@keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
+@import 'animations';
 
 $navbarHeight: 24px;
 
 .loading img {
 	-webkit-animation: spin 2s linear infinite;
-	-moz-animation: spin 2s linear infinite;
 	animation: spin 2s linear infinite;
 }
 
@@ -396,60 +392,6 @@ label[for] {
 	margin: 0 3px 0 0;
 }
 
-.lmd-animate-zoom {
-	-webkit-animation: animatezoom .3s cubic-bezier(.7, .1, .15, 1);
-	animation: animatezoom .3s cubic-bezier(.7, .1, .15, 1);
-}
-
-.lmd-animate-fade {
-	-webkit-animation: animatefade .15s ease-in;
-	animation: animatefade .15s ease-in;
-}
-
-@-webkit-keyframes animatezoom {
-	from {
-		-webkit-transform: scale(.7);
-		opacity: 0;
-	}
-	
-	to {
-		-webkit-transform: scale(1);
-		opacity: 1;
-	}
-}
-
-@keyframes animatezoom {
-	from {
-		transform: scale(.7);
-		opacity: 0;
-	}
-	
-	to {
-		transform: scale(1);
-		opacity: 1;
-	}
-}
-
-@-webkit-keyframes animatefade {
-	from {
-		opacity: 0;
-	}
-	
-	to {
-		opacity: 1;
-	}
-}
-
-@keyframes animatefade {
-	from {
-		opacity: 0;
-	}
-	
-	to {
-		opacity: 1;
-	}
-}
-
 .lmd-window {
 	position: fixed;
 	top: 0;
@@ -465,13 +407,21 @@ label[for] {
 	align-items: center;
 	justify-content: center;
 	
-	&.open {
+	&.lmd-open {
 		display: flex;
 		@extend .lmd-animate-fade;
 
 		.lmd-inner {
 			@extend .lmd-animate-zoom;
 		}
+	}
+	
+	&.lmd-close {
+		display: flex;
+		visibility: visible;
+		@extend .lmd-animate-fade-reverse;
+		-webkit-animation-fill-mode: forwards;
+		animation-fill-mode: forwards;
 	}
 	
 	.lmd-inner {
@@ -526,9 +476,17 @@ label[for] {
 	flex-direction: column;
 	outline: 0;
 	
-	&.open {
+	&.lmd-open {
 		display: flex;
 		@extend .lmd-animate-fade;
+	}
+	
+	&.lmd-close {
+		display: flex;
+		visibility: visible;
+		@extend .lmd-animate-fade-reverse;
+		-webkit-animation-fill-mode: forwards;
+		animation-fill-mode: forwards;
 	}
 }
 

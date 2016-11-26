@@ -1,0 +1,92 @@
+@-webkit-keyframes spin {
+	100% {
+		-webkit-transform: rotate(360deg);
+	}
+}
+
+@keyframes spin {
+	100% {
+		transform:rotate(360deg);
+	}
+}
+
+.lmd-animate-zoom {
+	-webkit-animation: animatezoom .3s cubic-bezier(.7, .1, .15, 1);
+	animation: animatezoom .3s cubic-bezier(.7, .1, .15, 1);
+}
+
+.lmd-animate-fade {
+	-webkit-animation: animatefade .15s ease-in;
+	animation: animatefade .15s ease-in;
+}
+
+.lmd-animate-fade-reverse {
+	-webkit-animation: animatefade-reverse .15s ease-in;
+	animation: animatefade-reverse .15s ease-in;
+}
+
+@-webkit-keyframes animatezoom {
+	from {
+		-webkit-transform: scale(.7);
+		opacity: 0;
+	}
+	
+	to {
+		-webkit-transform: scale(1);
+		opacity: 1;
+	}
+}
+
+@keyframes animatezoom {
+	from {
+		transform: scale(.7);
+		opacity: 0;
+	}
+	
+	to {
+		transform: scale(1);
+		opacity: 1;
+	}
+}
+
+@-webkit-keyframes animatefade {
+	from {
+		opacity: 0;
+	}
+	
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes animatefade {
+	from {
+		opacity: 0;
+	}
+	
+	to {
+		opacity: 1;
+	}
+}
+
+@-webkit-keyframes animatefade-reverse {
+	from {
+		opacity: 1;
+	}
+	
+	to {
+		opacity: 0;
+		visibility: collapse;
+	}
+}
+
+@keyframes animatefade-reverse {
+	from {
+		opacity: 1;
+	}
+	
+	to {
+		opacity: 0;
+		visibility: collapse;
+	}
+}

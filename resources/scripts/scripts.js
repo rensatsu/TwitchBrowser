@@ -45,7 +45,7 @@ var Search = {
 	
 	open: function(noClearInput) {
 		var noClearInput = noClearInput || false;
-		$('#goto-win-inner').addClass('open');
+		$('#goto-win-inner').removeClass('lmd-close').addClass('lmd-open');
 		if (!noClearInput) {
 			$('#goto-win-prompt').val('');
 		}
@@ -55,7 +55,7 @@ var Search = {
 	},
 	
 	close: function() {
-		$('#goto-win-inner').removeClass('open');
+		$('#goto-win-inner').addClass('lmd-close').removeClass('lmd-open');
 		this.isClosed = true;
 	},
 	
@@ -135,11 +135,11 @@ var Search = {
 
 var SettingsWindow = {
 	open: function() {
-		$('#settings-win-inner').addClass('open');
+		$('#settings-win-inner').removeClass('lmd-close').addClass('lmd-open');
 	},
 	
 	close: function() {
-		$('#settings-win-inner').removeClass('open');
+		$('#settings-win-inner').addClass('lmd-close').removeClass('lmd-open');
 	},
 	
 	init: function() {
@@ -655,7 +655,7 @@ var ChannelPreview = {
 		var owner = this;
 		$('body').css({ overflow: 'hidden' });
 		this.showing = true;
-		this.elem.addClass('open');
+		this.elem.removeClass('lmd-close').addClass('lmd-open');
 		this.elem.find('.window-heading-close')
 			.unbind('click')
 			.on('click', function() {
@@ -672,7 +672,7 @@ var ChannelPreview = {
 	hide: function () {
 		this.showing = false;
 		$('body').css({ overflow: 'auto' });
-		this.elem.removeClass('open');
+		this.elem.addClass('lmd-close').removeClass('lmd-open');
 
 		this.channel = false;
 		$('body').removeClass('popup-sidebar-showing');
