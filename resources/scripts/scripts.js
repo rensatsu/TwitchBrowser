@@ -491,6 +491,7 @@ function init_settings() {
 function showAuth() {
 	if (!userAuthorized) {
 		$('#goto-auth').parent().removeClass('hide');
+		$('#settings-logout').hide();
 	}
 }
 

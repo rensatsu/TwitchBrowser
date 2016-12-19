@@ -19,7 +19,7 @@ if (isset($_GET['_key'])){
 	exit;
 }
 
-$resVersion = 51;
+$resVersion = 53;
 // $resVersion = time() . "dev";
 
 $clru=urlencode($CONFIG['twitch']['home']);
@@ -249,7 +249,7 @@ if ($twitchAuth) {
 							Show Chat window by default
 						</label>
 					</div>
-					<div>
+					<div id='settings-logout'>
 						<button class='btn btn-default btn-block text-left' id='goto-logout'>
 							<span class='fa fa-sign-out fa-fw'></span>
 							Log out
