@@ -19,7 +19,7 @@ if (isset($_GET['_key'])){
 	exit;
 }
 
-$resVersion = 49;
+$resVersion = 51;
 // $resVersion = time() . "dev";
 
 $clru=urlencode($CONFIG['twitch']['home']);
@@ -111,32 +111,39 @@ if ($twitchAuth) {
 		<nav class='navbar navbar-default navbar-fixed-top noselect'>
 			<div class='container-fluid'>
 				<div class='navbar-header'>
+					<button type='button' class='navbar-toggle collapsed' data-toggle='collapse' data-target='#navbar-collapse'>
+						<span class='icon-bar'></span>
+						<span class='icon-bar'></span>
+						<span class='icon-bar'></span>
+					</button>
 					<a class='navbar-brand ajax' href='?main=1'>Twitch Browser</a>
 				</div>
-				<ul class='nav navbar-nav navbar-right'>
-					<li>
-						<p class='navbar-text'>v0.<?=$resVersion?></p>
-					</li>
-					<li>
-						<a href='javascript:' id='goto-settings'>
-							<span class='fa fa-cog'></span>
-							Settings
-						</a>
-					</li>
-					<li>
-						<a href='javascript:' id='goto-channel'>
-							<span class='fa fa-search'></span>
-							Search
-						</a>
-					</li>
-					<li class='hide'>
-						<a href='javascript:' id='goto-auth'>
-							<span class='fa fa-user-circle'></span>
-							Authorization
-						</a>
-					</li>
-					<?=$userNameField?>
-				</ul>
+				<div class='collapse navbar-collapse' id='navbar-collapse'>
+					<ul class='nav navbar-nav navbar-right'>
+						<li>
+							<p class='navbar-text'>v0.<?=$resVersion?></p>
+						</li>
+						<li>
+							<a href='javascript:' id='goto-settings'>
+								<span class='fa fa-cog'></span>
+								Settings
+							</a>
+						</li>
+						<li>
+							<a href='javascript:' id='goto-channel'>
+								<span class='fa fa-search'></span>
+								Search
+							</a>
+						</li>
+						<li class='hide'>
+							<a href='javascript:' id='goto-auth'>
+								<span class='fa fa-user-circle'></span>
+								Authorization
+							</a>
+						</li>
+						<?=$userNameField?>
+					</ul>
+				</div>
 			</div>
 		</nav>
 		
@@ -215,7 +222,7 @@ if ($twitchAuth) {
 							</label>
 						</div>
 					</div>
-					<div>
+					<div id='settings-form-player'>
 						<h4>Player Application</h4>
 						<div class='btn-group' data-toggle='buttons' id='player-selector-container'>
 							<label class='btn btn-default active'>
@@ -224,6 +231,12 @@ if ($twitchAuth) {
 							<label class='btn btn-default'>
 								<input type='radio' name='player-selector' autocomplete='off' data-value='livestreamer'> Livestreamer
 							</label>
+						</div>
+					</div>
+					<div id='settings-form-livestreamer'>
+						<h4>Livestreamer Location</h4>
+						<div>
+							<input type='text' placeholder='Path to the livestreamer.exe' id='player-ls-location' class='form-control' />
 						</div>
 					</div>
 					<div>
@@ -246,7 +259,25 @@ if ($twitchAuth) {
 			</div>
 		</div>
 		
-		<script>var userAuthorized = '<?=$twitchAuth?>';</script>
+		<script>
+			var userAuthorized = '<?=$twitchAuth?>';
+			if (typeof require !== 'undefined') {
+				window.node = {
+					available: true,
+					require: require,
+					ipcRenderer: require('electron').ipcRenderer
+				};
+
+				delete window.require;
+				delete window.exports;
+				delete window.module;
+			} else {
+				window.node = {
+					available: false
+				}
+			}
+		</script>
+
 		<script src='<?=$static?>/node_modules/jquery/dist/jquery.min.js'></script>
 		<script src='<?=$static?>/bootstrap-3.3/js/bootstrap.min.js'></script>
 		<script src='resources/scripts/scripts.js?_v=<?=$resVersion?>'></script>

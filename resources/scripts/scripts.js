@@ -22,6 +22,7 @@ function getRandom (min, max) {
 var Settings = {
 	quality: 'source',
 	player: 'inapp',
+	livestreamer: '',
 	readNotices: '',
 	chat: false
 }
@@ -199,7 +200,7 @@ function alert(text, type, timeout){
 	return true;
 }
 
-function livestreamer(el){
+function livestreamer(el) {
 	var url = false;
 	if (typeof el === 'string') {
 		url = el;
@@ -209,16 +210,19 @@ function livestreamer(el){
 	
 	if (url !== false){
 		if (Settings.player === 'livestreamer') {
-			fullUrl = 'livestreamer:' + url + ' ' + Settings.quality;
-			
-			if ($('#redirframe').length==0){
-				$('body').append("<iframe src='" + fullUrl + "' id='redirframe'></iframe>");
-			} else {
-				$('#redirframe').attr('src', fullUrl);
+			if (window.node.available && Settings.livestreamer != '') {
+				const fullUrl = url + ' ' + Settings.quality;
+				window.node.ipcRenderer.send("shell-execute", {app: Settings.livestreamer, args: fullUrl});
+				
+				alert("Starting stream: " + url);
+				return true;
+			} else if (!window.node.available) {
+				alert("Livestreamer option is only available in a launcher");
+				return false;
+			} else if (Settings.livestreamer == '') {
+				alert("Livestreamer path is not defined, check settings");
+				return false;
 			}
-			
-			alert("Starting stream: " + url);
-			return true;
 		} else if (Settings.player === 'inapp') {
 			var channel = url.match(/twitch\.tv\/([a-zA-Z0-9_]*)/);
 			if (channel) {
@@ -232,7 +236,7 @@ function livestreamer(el){
 		
 		return false;
 	} else {
-		alert("[DEBUG]: livestramer: no channel");
+		alert("[DEBUG]: livestreamer: no channel");
 		return false;
 	}
 }
@@ -308,8 +312,10 @@ function setPlayer(player) {
 		
 		if (player === 'inapp') {
 			$('.window-heading-stream').hide();
+			$('#settings-form-livestreamer').hide();
 		} else {
 			$('.window-heading-stream').show();
+			$('#settings-form-livestreamer').show();
 		}
 		
 		LS.set('pref_player', player);
@@ -326,6 +332,18 @@ function setChannel(a) {
 	
 	var channel = val.replace(/^(.*)\/([a-zA-Z0-9_]*)$/, "$2");
 	location.hash = 'channel=' + channel;
+}
+
+function setLivestreamer(a) {
+	var val = a || false;
+	if (!val) {
+		val = '';
+	}
+	
+	val = val.replace(/\\\\/g, '/').replace(/\\/g, '/').replace(/"/g, '');
+	LS.set('pref_livestreamer', val);
+	Settings.livestreamer = val;
+	$('#player-ls-location').val(val);
 }
 
 function setChat(a) {
@@ -381,6 +399,12 @@ function init_settings() {
 		setChat(Settings.chat);
 	} else {
 		setChat(LS.get('pref_chat'));
+	}
+	
+	if (LS.get('pref_livestreamer') === null) {
+		setLivestreamer(Settings.livestreamer);
+	} else {
+		setLivestreamer(LS.get('pref_livestreamer'));
 	}
 	
 	$('#quality-selector-container input').unbind('change').on('change', function() {
@@ -458,6 +482,10 @@ function init_settings() {
 	$('#chat-checkbox').unbind('change').on('change', function() {
 		setChat($(this).prop('checked'));
 	});
+	
+	$('#player-ls-location').unbind('change keypress').on('change keypress', function() {
+		setLivestreamer($(this).val());
+	});
 }
 
 function showAuth() {
@@ -526,6 +554,12 @@ function messagesHandler(e) {
 $(document).ready(function(){
 	init_ajax();
 	init_settings();
+	
+	if (!window.node.available) {
+		$('#settings-form-player').hide();
+		$('#settings-form-livestreamer').hide();
+		setPlayer('inapp');
+	}
 	
 	if (location.hash.indexOf('&popout=1') != -1) {
 		isPopout = true;

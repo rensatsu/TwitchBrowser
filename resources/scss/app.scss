@@ -309,13 +309,13 @@ label[for] {
 	margin: 3px;
 	border-radius: 3px;
 	flex: 1 0 0;
-	border: 1px solid #479;
+	border: 1px solid #e0e0e0;
 	min-width: 80px;
 	max-width: 100px;
 }
 
 .follows-online {
-    background: #bde;
+    background: #9fa8da linear-gradient(#9fa8da 80%, #c5cae9);
 	border-color: #36c;
 }
 
@@ -432,6 +432,9 @@ label[for] {
 		min-width: 500px;
 		max-width: 700px;
 		box-shadow: 0 0 10px #fff;
+		
+		max-height: 95%;
+		overflow-y: auto;
 		
 		&>h3 {
 			padding: 10px;
