@@ -423,13 +423,6 @@ function init_settings() {
 		SettingsWindow.open();
 	});
 	
-	// $('#goto-win-prompt').on('keypress', function(e) {
-	// 	if (e.keyCode == 13) {
-	// 		e.preventDefault();
-	// 		setChannel();
-	// 	}
-	// });
-	
 	$('#goto-win-confirm').unbind('click').on('click', function() {
 		setChannel();
 	});
@@ -483,7 +476,7 @@ function init_settings() {
 		setChat($(this).prop('checked'));
 	});
 	
-	$('#player-ls-location').unbind('change keypress').on('change keypress', function() {
+	$('#player-ls-location').unbind('change').on('change', function() {
 		setLivestreamer($(this).val());
 	});
 }
