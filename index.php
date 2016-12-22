@@ -236,7 +236,7 @@ if ($twitchAuth) {
 					<div id='settings-form-livestreamer'>
 						<h4>Livestreamer Location</h4>
 						<div>
-							<input type='text' placeholder='Path to the livestreamer.exe' id='player-ls-location' class='form-control' />
+							<input type='text' placeholder='Path to the livestreamer' id='player-ls-location' class='form-control' />
 						</div>
 					</div>
 					<div>

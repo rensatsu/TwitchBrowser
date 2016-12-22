@@ -128,9 +128,11 @@ var Controls = {
 	mute: function() {
 		if (player.getMuted()) {
 			player.setMuted(false);
+			ge('btn-mute-overlay').style.display = 'none';
 			ge('slider-volume').value = this.playerVolume;
 		} else {
 			player.setMuted(true);
+			ge('btn-mute-overlay').style.display = 'block';
 			ge('slider-volume').value = 0;
 		}
 
@@ -164,6 +166,10 @@ ge('btn-chat').addEventListener('click', function() {
 
 ge('btn-close').addEventListener('click', function() {
 	Controls.messageParent('close');
+});
+
+ge('btn-mute').addEventListener('click', function() {
+	Controls.mute();
 });
 
 ge('controls').addEventListener('mousemove', function(e) {

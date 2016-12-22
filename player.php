@@ -10,7 +10,7 @@ $quality = isset($_REQUEST['quality']) ? htmlspecialchars($_REQUEST['quality']) 
 $quality = ($quality == 'source') ? 'chunked' : $quality;
 $quality = ($quality == 'audio') ? 'mobile' : $quality;
 
-$resVersion = 18;
+$resVersion = 19;
 // $resVersion = time() . "dev";
 
 ?><!DOCTYPE html>
@@ -30,27 +30,35 @@ $resVersion = 18;
 		
 		<div id='controls'>
 			<div class='buttons'>
-				<button id='btn-play'>
+				<button id='btn-play' class='btn'>
 					<span class='fa fa-fw fa-play'></span> <u>P</u>lay
 				</button>
-				<button id='btn-stop'>
+				<button id='btn-stop' class='btn'>
 					<span class='fa fa-fw fa-stop'></span> Sto<u>p</u>
 				</button>
-				<button id='btn-screen'>
+				<button id='btn-screen' class='btn'>
 					<span class='fa fa-fw fa-arrows-alt'></span> <u>F</u>ullscreen
 				</button>
 			</div>
 			
-			<input id='slider-volume' type='range' min='0' max='1' value='0.5' step='0.01' class='slider' />
+			<div>
+				<button id='btn-mute' class='btn-icon' title='Toggle Mute [m]'>
+					<span class='fa-stack fa-lg'>
+						<i class='fa fa-volume-off fa-stack-1x'></i>
+						<i class='fa fa-ban fa-stack-1x' id='btn-mute-overlay'></i>
+					</span>
+				</button>
+				<input id='slider-volume' type='range' min='0' max='1' value='0.5' step='0.01' class='slider' />
+			</div>
 			
 			<div class='buttons heading-buttons'>
-				<button id='btn-popout' class='auto-width' title='Open in External Window [o]'>
+				<button id='btn-popout' class='btn auto-width' title='Open in External Window [o]'>
 					<span class='fa fa-fw fa-external-link'></span>
 				</button>
-				<button id='btn-chat' class='auto-width' title='Toggle Chat [c]'>
+				<button id='btn-chat' class='btn auto-width' title='Toggle Chat [c]'>
 					<span class='fa fa-fw fa-comments'></span>
 				</button>
-				<button id='btn-close' class='auto-width' title='Close Stream [q]'>
+				<button id='btn-close' class='btn auto-width' title='Close Stream [q]'>
 					<span class='fa fa-fw fa-times'></span>
 				</button>
 			</div>

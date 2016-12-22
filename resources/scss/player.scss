@@ -1,6 +1,8 @@
 @import url('https://fonts.googleapis.com/css?family=Play');
 @import 'slider';
 
+$btnColor: rgb(195, 167, 217);
+
 @mixin maximizeElement {
 	position: fixed;
 	top: 0;
@@ -81,14 +83,14 @@
 		padding: 0;
 	}
 	
-	button {
+	.btn {
 		width: 120px;
 		height: 30px;
 		margin: 0;
 		
 		background: #2d3030;
-		border: 1px solid rgb(195, 167, 217);
-		color: rgb(195, 167, 217);
+		border: 1px solid $btnColor;
+		color: $btnColor;
 		outline: none;
 		transition: .3s background-color;
 		cursor: pointer;
@@ -100,6 +102,16 @@
 		&:hover {
 			background: #484d4d;
 		}
+	}
+	
+	.btn-icon {
+		height: 30px;
+		background: transparent;
+		border: 0;
+		color: $btnColor;
+		outline: none;
+		transition: .3s background-color;
+		cursor: pointer;
 	}
 }
 
@@ -119,4 +131,8 @@
 
 #slider-volume {
 	width: 160px;
+}
+
+#btn-mute-overlay {
+	display: none;
 }
