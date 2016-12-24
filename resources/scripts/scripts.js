@@ -352,9 +352,7 @@ function setChat(a) {
 	Settings.chat = val;
 	
 	LS.set('pref_chat', val);
-	
-	console.log("Changing chat status to: ", val);
-	
+
 	if (val) {
 		$('#chat-checkbox').prop('checked', 'checked');
 		$('#chat-checkbox-icon').removeClass('fa-square').addClass('fa-check-square');
@@ -488,13 +486,15 @@ function showAuth() {
 	}
 }
 
-function fullscreenWin() {
-	if (
-		document.fullscreenEnabled || 
-		document.webkitFullscreenElement === null || 
-		document.mozFullScreenEnabled ||
-		document.msFullscreenEnabled
-	) {
+var WinFullScreen = {
+	isFullscreen: () => {
+		return (document.fullscreenEnabled || 
+		        document.webkitFullscreenElement === null || 
+		        document.mozFullScreenEnabled ||
+		        document.msFullscreenEnabled)
+	},
+	
+	open: () => {
 		var i = document.body;
 		if (i.requestFullscreen) {
 			i.requestFullscreen();
@@ -505,7 +505,9 @@ function fullscreenWin() {
 		} else if (i.msRequestFullscreen) {
 			i.msRequestFullscreen();
 		}
-	} else {
+	},
+	
+	close: () => {
 		if (document.exitFullscreen) {
 			document.exitFullscreen();
 		} else if (document.webkitExitFullscreen) {
@@ -514,6 +516,14 @@ function fullscreenWin() {
 			document.mozCancelFullScreen();
 		} else if (document.msExitFullscreen) {
 			document.msExitFullscreen();
+		}
+	},
+	
+	toggle: function() {
+		if (this.isFullscreen()) {
+			this.open();
+		} else {
+			this.close();
 		}
 	}
 }
@@ -538,7 +548,7 @@ function messagesHandler(e) {
 					history.go(-1);
 					break;
 				case 'fullscreen':
-					fullscreenWin();
+					WinFullScreen.toggle();
 					break;
 			}
 		}
@@ -705,6 +715,8 @@ var ChannelPreview = {
 		this.channel = false;
 		$('body').removeClass('popup-sidebar-showing');
 		this.eventHide();
+		
+		WinFullScreen.close();
 	},
 	
 	load: function (hash) {

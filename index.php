@@ -19,7 +19,7 @@ if (isset($_GET['_key'])){
 	exit;
 }
 
-$resVersion = 54;
+$resVersion = 55;
 // $resVersion = time() . "dev";
 
 $clru=urlencode($CONFIG['twitch']['home']);
