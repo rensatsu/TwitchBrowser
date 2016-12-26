@@ -78,7 +78,12 @@ function twpost($url, $data) {
 
 function twget($action, $age=300, $err_no_cache=false){
 	global $useragent, $CONFIG;
-	$url='https://api.twitch.tv/kraken/' . preg_replace('#^(\/)#', '', $action);
+	if (strpos($action, "http") === 0) {
+		$url = $action;
+	} else {
+		$url='https://api.twitch.tv/kraken/' . preg_replace('#^(\/)#', '', $action);
+	}
+	
 	$key=	(isset($_SESSION['link_twapi_token'])) ? $_SESSION['link_twapi_token'] : 
 				(isset($_COOKIE['link_twapi_token']) ? $_COOKIE['link_twapi_token'] : false);
 				

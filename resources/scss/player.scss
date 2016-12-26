@@ -32,7 +32,7 @@ $btnColor: rgb(195, 167, 217);
 	background: #000;
 	z-index: 1;
 
-	iframe {
+	iframe, video {
 		@include maximizeElement();
 	}
 }
