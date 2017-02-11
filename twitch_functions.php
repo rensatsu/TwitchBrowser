@@ -242,7 +242,7 @@ function get_game_streams($game, $limit=12, $offset=0){
 			// $list.="<div class='col-md-3 col-sm-6 col-xs-6'>
 			$list.="<div class='game-box'>
 						<div class='thumbnail'>
-							<a href='javascript:' onclick='livestreamer(this);' data-live='http://twitch.tv/{$stream->channel->name}' title='Start in Livestreamer'>
+							<a href='javascript:' onclick='streamlink(this);' data-live='http://twitch.tv/{$stream->channel->name}' title='Start in Streamlink'>
 								<img src='" . replace_http($stream->preview->medium) . "'>
 							</a>
 							<div class='caption'>
@@ -355,7 +355,7 @@ function get_top_streams($limit=15, $offset=0){
 function format_favourite($streams, $name, $display_name, $logo, $online){
 	//echo "<pre>"; var_dump($streams); echo "</pre>";
 	$onl_highlight=($online) ? ' follows-online' : '';
-	$onl_play=($online) ? "<a  onclick='livestreamer(this);' data-live='http://twitch.tv/{$name}' href='javascript:' title='Start in Livestreamer'><img src='" . replace_http($logo). "' class='fav-avatar'></a>" : "<img src='" . replace_http($logo). "' class='fav-avatar'>";
+	$onl_play=($online) ? "<a  onclick='streamlink(this);' data-live='http://twitch.tv/{$name}' href='javascript:' title='Start in Streamlink'><img src='" . replace_http($logo). "' class='fav-avatar'></a>" : "<img src='" . replace_http($logo). "' class='fav-avatar'>";
 	$viewers=($online) ? $streams[$name]['viewers'] : false;
 	$vwr=($viewers) ? "<span class='follows-viewers'><span class='fa fa-eye fa-fw'></span> {$viewers}</span>" : '';
 	$game=(isset($streams[$name]['game']) && $streams[$name]['game']!==NULL) ? "<b>{$streams[$name]['game']}</b> - " : '';
@@ -458,7 +458,7 @@ function get_channel_info($channel){
 			$list.="<table class='channel-data-table'><tr><td style='width:40%'>";
 			$list.="<div class='channel-data'><img src='" . replace_http($tmp->logo). "' class='fav-avatar'>{$tmp->display_name}<br>{$shg}</div>";
 			$list.="</td><td>";
-			$list.="<div class='btn-group btn-group-justified'><a class='btn btn-lg btn-primary' style='height:100%'  onclick='livestreamer(this);' data-live='http://twitch.tv/{$tmp->name}' href='javascript:'>Watch in Livestreamer</a><a class='btn btn-lg btn-primary' style='height:100%' href='irc://irc.twitch.tv:443/{$tmp->name}'>Open IRC Chat</a></div>";
+			$list.="<div class='btn-group btn-group-justified'><a class='btn btn-lg btn-primary' style='height:100%' onclick='streamlink(this);' data-live='http://twitch.tv/{$tmp->name}' href='javascript:'>Watch in Streamlink</a><a class='btn btn-lg btn-primary' style='height:100%' href='irc://irc.twitch.tv:443/{$tmp->name}'>Open IRC Chat</a></div>";
 			$list.="</td></tr></table>";
 			// $list.=(isset($stream->stream->preview->large)) ? "<div class='preview-banner'><img src='" .replace_http($stream->stream->preview->large) . "' class='img-thumbnail'/></div>" : ((isset($tmp->profile_banner)) ? "<div class='preview-banner'><img src='" .replace_http($tmp->profile_banner). "' class='img-thumbnail'/></div>" : '');
 			//$list.= "<iframe class='channel-preview-frame' src='player.php?channel={$tmp->name}'></iframe>";
@@ -467,7 +467,7 @@ function get_channel_info($channel){
 			$list.="<table class='channel-data-table'><tr><td style='width:40%'>";
 			$list.="<div class='channel-data'><img src='" . replace_http($tmp->logo). "' class='fav-avatar'>{$tmp->display_name}<br>is offline</div>";
 			$list.="</td><td>";
-			$list.="<div class='btn-group btn-group-justified'><a class='btn btn-lg btn-default' style='height:100%' onclick='livestreamer(this);' data-live='http://twitch.tv/{$tmp->name}' href='javascript:'>Watch in Livestreamer</a><a class='btn btn-lg btn-default' style='height:100%' href='irc://irc.twitch.tv:443/{$tmp->name}'>Open IRC Chat</a></div>";
+			$list.="<div class='btn-group btn-group-justified'><a class='btn btn-lg btn-default' style='height:100%' onclick='streamlink(this);' data-live='http://twitch.tv/{$tmp->name}' href='javascript:'>Watch in Streamlink</a><a class='btn btn-lg btn-default' style='height:100%' href='irc://irc.twitch.tv:443/{$tmp->name}'>Open IRC Chat</a></div>";
 			$list.="</td></tr></table>";
 			$list.=(isset($tmp->video_banner)) ? "<div class='preview-banner'><img src='" . replace_http($tmp->video_banner). "' class='img-thumbnail'/></div>" : '';
 		}
@@ -480,11 +480,11 @@ function get_channel_info($channel){
 
 function checkNewQuality($line, $quality) {
 	$mapper = array(
-		'audio' => 'audio',
+		'audio'  => 'audio',
 		'mobile' => '144p30',
-		'low' => '240p30',
+		'low'    => '240p30',
 		'medium' => array('480p30', '360p30'),
-		'high' => array('720p60', '720p30'),
+		'high'   => array('720p60', '720p30'),
 		'source' => array('1080p60', '1080p30')
 	);
 	

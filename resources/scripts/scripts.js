@@ -22,21 +22,23 @@ function getRandom (min, max) {
 var Settings = {
 	quality: 'source',
 	player: 'inapp',
-	livestreamer: '',
+	streamlink: '',
+	streamlinkMin: true,
+	streamlinkPython: '',
 	readNotices: '',
 	chat: false
 }
 
 var Notices = {
-	'p': "New settings window. Option to show chat by default.",
-	'r': "Due to Twitch API changes, this application may not work. In the future, most probably, it will be discontinued"
+	'r': "Due to Twitch API changes, this application may not work. In the future, most probably, it will be discontinued",
+	's': "Replaced Livestreamer with Streamlink"
 };
 
 var loadingAnimation = "<div class='loading'><img src='resources/images/ring.svg' alt='Loading' /><p>Loading...</p></div>";
 var PlayerArray = [];
 var HLSArray = [];
 var LPArray = [];
-var supportedPlayers = ['inapp', 'livestreamer'];
+var supportedPlayers = ['inapp', 'streamlink'];
 var transparentGif = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 var isPopout = false;
 
@@ -175,17 +177,42 @@ function ajax(params, selector, changehash, noScrollTop){
 }
 
 var alertsCount = 0;
-function alert(text, type, timeout){
+function alert(text, type, timeout) {
 	var text = text || '';
 	var type = type || 'default';
 	var timeout = timeout > 0 ? timeout : 10;
+	var icon = "";
+	
+	switch (type) {
+		case "information":
+		case "info": 
+			type = "info";
+			icon = "<span class='fa fa-fw fa-info-circle'></span> ";
+			break;
+		case "error": 
+			type = "error";
+			icon = "<span class='fa fa-fw fa-exclamation-circle'></span> ";
+			break;
+		case "success": 
+			type = "success";
+			icon = "<span class='fa fa-fw fa-check-circle'></span> ";
+			break;
+		default:
+			type = "default";
+			icon = "";
+			break;
+	}
+	
 	alertsCount++;
 	if (type=='error') type='danger';
-	$('#notifications').append("<div class='notification notification-" + type +
-		"' id='alert-" + alertsCount +
-		"' style='display:none'>" + text + "</div>");
+	$('#notifications').append(`
+		<div class='notification notification-${type}' id='alert-${alertsCount}' style='display:none'>
+			${icon}${text}
+		</div>
+	`);
 	$('#alert-' + alertsCount).slideDown('fast');
-	$('#alert-' + alertsCount).on('click', function(){
+	
+	$('#alert-' + alertsCount).on('click', function() {
 		$(this).slideUp('fast', function(){
 			$(this).remove();
 		});
@@ -200,7 +227,7 @@ function alert(text, type, timeout){
 	return true;
 }
 
-function livestreamer(el) {
+function streamlink(el) {
 	var url = false;
 	if (typeof el === 'string') {
 		url = el;
@@ -209,18 +236,32 @@ function livestreamer(el) {
 	}
 	
 	if (url !== false){
-		if (Settings.player === 'livestreamer') {
-			if (window.node.available && Settings.livestreamer != '') {
-				const fullUrl = url + ' ' + Settings.quality;
-				window.node.ipcRenderer.send("shell-execute", {app: Settings.livestreamer, args: fullUrl});
+		if (Settings.player === 'streamlink') {
+			if (window.node.available && Settings.streamlink != '' && Settings.streamlinkPython != '') {
+				var data = {
+					app: Settings.streamlinkPython,
+					args: [Settings.streamlink, url, Settings.quality],
+					minimize: Settings.streamlinkMin
+				};
 				
-				alert("Starting stream: " + url);
+				console.log("[NODE]", "shell-execute", data);
+				window.node.ipcRenderer.send("shell-execute", data);
+				
+				// var channel = url.match(/twitch\.tv\/([a-zA-Z0-9_]*)/);
+				// if (channel) {
+				// 	ChannelPreview.load("channel=" + channel[1]);
+				// }
+				
+				alert("Starting stream: " + url, "info");
 				return true;
 			} else if (!window.node.available) {
-				alert("Livestreamer option is only available in a launcher");
+				alert("Streamlink option is only available in a launcher", "error");
 				return false;
-			} else if (Settings.livestreamer == '') {
-				alert("Livestreamer path is not defined, check settings");
+			} else if (Settings.streamlink == '') {
+				alert("Streamlink path is not defined, check settings", "error");
+				return false;
+			} else if (Settings.streamlinkPython == '') {
+				alert("Python path is not defined, check settings", "error");
 				return false;
 			}
 		} else if (Settings.player === 'inapp') {
@@ -236,7 +277,7 @@ function livestreamer(el) {
 		
 		return false;
 	} else {
-		alert("[DEBUG]: livestreamer: no channel");
+		alert("[DEBUG]: Streamlink: no channel");
 		return false;
 	}
 }
@@ -312,10 +353,16 @@ function setPlayer(player) {
 		
 		if (player === 'inapp') {
 			$('.window-heading-stream').hide();
-			$('#settings-form-livestreamer').hide();
+			$('#settings-form-streamlink-python').hide();
+			$('#settings-form-streamlink-script').hide();
+			$('#settings-form-streamlink-help').show();
+			$('#player-sl-min').hide();
 		} else {
 			$('.window-heading-stream').show();
-			$('#settings-form-livestreamer').show();
+			$('#settings-form-streamlink-python').show();
+			$('#settings-form-streamlink-script').show();
+			$('#settings-form-streamlink-help').hide();
+			$('#player-sl-min').show();
 		}
 		
 		LS.set('pref_player', player);
@@ -334,16 +381,43 @@ function setChannel(a) {
 	location.hash = 'channel=' + channel;
 }
 
-function setLivestreamer(a) {
+function setStreamlink(a) {
 	var val = a || false;
 	if (!val) {
 		val = '';
 	}
 	
 	val = val.replace(/\\\\/g, '/').replace(/\\/g, '/').replace(/"/g, '');
-	LS.set('pref_livestreamer', val);
-	Settings.livestreamer = val;
-	$('#player-ls-location').val(val);
+	LS.set('pref_streamlink', val);
+	Settings.streamlink = val;
+	$('#player-sl-script').val(val);
+}
+
+function setStreamlinkPython(a) {
+	var val = a || false;
+	if (!val) {
+		val = '';
+	}
+	
+	val = val.replace(/\\\\/g, '/').replace(/\\/g, '/').replace(/"/g, '');
+	LS.set('pref_streamlink_python', val);
+	Settings.streamlinkPython = val;
+	$('#player-sl-python').val(val);
+}
+
+function setStreamlinkMin(a) {
+	var val = (a === "true" || a === true) ? true : false;
+	
+	Settings.streamlinkMin = val;
+	
+	LS.set('pref_streamlink_min', val);
+
+	if (val) {
+		$('#player-sl-min-checkbox').prop('checked', 'checked');
+		$('#player-sl-min-checkbox-icon').removeClass('fa-square').addClass('fa-check-square');
+	} else {
+		$('#player-sl-min-checkbox-icon').removeClass('fa-check-square').addClass('fa-square');
+	}
 }
 
 function setChat(a) {
@@ -399,10 +473,22 @@ function init_settings() {
 		setChat(LS.get('pref_chat'));
 	}
 	
-	if (LS.get('pref_livestreamer') === null) {
-		setLivestreamer(Settings.livestreamer);
+	if (LS.get('pref_streamlink_min') === null) {
+		setStreamlinkMin(Settings.streamlinkMin);
 	} else {
-		setLivestreamer(LS.get('pref_livestreamer'));
+		setStreamlinkMin(LS.get('pref_streamlink_min'));
+	}
+	
+	if (LS.get('pref_streamlink') === null) {
+		setStreamlink(Settings.streamlink);
+	} else {
+		setStreamlink(LS.get('pref_streamlink'));
+	}
+	
+	if (LS.get('pref_streamlink_python') === null) {
+		setStreamlinkPython(Settings.streamlinkPython);
+	} else {
+		setStreamlinkPython(LS.get('pref_streamlink_python'));
 	}
 	
 	$('#quality-selector-container input').unbind('change').on('change', function() {
@@ -474,8 +560,16 @@ function init_settings() {
 		setChat($(this).prop('checked'));
 	});
 	
-	$('#player-ls-location').unbind('change').on('change', function() {
-		setLivestreamer($(this).val());
+	$('#player-sl-min-checkbox').unbind('change').on('change', function() {
+		setStreamlinkMin($(this).prop('checked'));
+	});
+	
+	$('#player-sl-script').unbind('change').on('change', function() {
+		setStreamlink($(this).val());
+	});
+	
+	$('#player-sl-python').unbind('change').on('change', function() {
+		setStreamlinkPython($(this).val());
 	});
 }
 
@@ -561,8 +655,57 @@ $(document).ready(function(){
 	
 	if (!window.node.available) {
 		$('#settings-form-player').hide();
-		$('#settings-form-livestreamer').hide();
+		$('#settings-form-streamlink-python').hide();
+		$('#settings-form-streamlink-script').hide();
+		$('#settings-form-streamlink-help').hide();
+		$('#player-sl-min').hide();
 		setPlayer('inapp');
+	}
+	
+	if (window.node.available) {
+		window.node.ipcRenderer.on("shell-stdout", (event, output) => {
+			output = output.trim().split("\n");
+			for (l = 0; l < output.length; l++) {
+				var data = output[l];
+				console.log("[NODE]", "shell-stdout", data);
+				var type = data.match(/^error\:/) ? 'error' : (
+					data.match(/\[info\]/) ? 'info' : (data.match(/\[(warning|error)\]/) ? 'error' : 'default'));
+				var text = data.replace(/^error\:\s/, '').replace(/^\[[^\s]*\]\s/, '');
+				text = (text.length > 97) ? text.substr(0, 100) + "…" : text;
+				
+				var dontShow = [
+					"Found matching plugin",
+					"Attempting to authenticate",
+					"Successfully logged in",
+					"Available streams",
+					"switching to"
+				];
+				
+				var showMessage = true;
+				
+				for (i = 0; i < dontShow.length; i++) {
+					if (text.indexOf(dontShow[i]) != -1) {
+						showMessage = false;
+						break;
+					}
+				}
+				
+				if (showMessage) {
+					alert(text, type, 3);
+				}
+			}
+		});
+		
+		window.node.ipcRenderer.on("shell-stderr", (event, data) => {
+			console.log("[NODE]", "shell-stderr", data);
+		});
+		
+		window.node.ipcRenderer.on("shell-exit", (event, data) => {
+			console.log("[NODE]", "shell-exit", data);
+			if (data != 0) {
+				alert("Livestramer returned an error!", "error", 3);
+			}
+		});
 	}
 	
 	if (location.hash.indexOf('&popout=1') != -1) {
@@ -609,27 +752,6 @@ var ChannelPreview = {
 		
 		$('#channel-preview-body').addClass('link-video');
 		var quality = Settings.quality.split(",")[0];
-		
-		/* Twitch API *//*
-		quality = quality == 'source' ? 'chunked' : quality;
-		var options = {
-			width: "100%",
-			height: "100%",
-			channel: this.channel,
-			autoplay: true,
-			html5: true,
-			branding: false,
-			quality: quality
-		};
-		
-		var player = new Twitch.Player("channel-preview-body", options);
-		player.addEventListener('ready', function() {
-			console.log("Player is ready, starting playback");
-			player.setVolume(0.5);
-			player.play();
-		});
-		PlayerArray.push(player);
-		/* - */
 		
 		/* Link Player */
 		var videoOwner = document.getElementById('channel-preview-body');
@@ -730,7 +852,7 @@ var ChannelPreview = {
 			});
 			
 			this.elem.find('.window-heading-stream').unbind('click').on('click', function() {
-				livestreamer("https://twitch.tv/" + owner.channel);
+				streamlink("https://twitch.tv/" + owner.channel);
 				owner.destroyVideo();
 				owner.hide();
 			});

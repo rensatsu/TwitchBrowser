@@ -101,7 +101,7 @@ if (isset($_REQUEST['m3u8'])) {
 	}
 }
 
-$resVersion = 20;
+$resVersion = 21;
 // $resVersion = time() . "dev";
 
 ?><!DOCTYPE html>
@@ -110,7 +110,7 @@ $resVersion = 20;
 		<title>Twitch Player</title>
 		<meta charset='utf-8' />
 		<meta name='viewport' content='width=device-width, user-scalable=no, initial-scale=1' />
-		<link rel='stylesheet' href='resources/styles/player.css?<?=$resVersion?>' />
+		<link rel='stylesheet' href='resources/styles/player.css?_v=<?=$resVersion?>' />
 		<link href='<?=$static?>/node_modules/font-awesome/css/font-awesome.min.css?_v=<?=$resVersion?>' rel='stylesheet'>
 	</head>
 	<body>

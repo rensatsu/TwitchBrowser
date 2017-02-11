@@ -19,7 +19,7 @@ if (isset($_GET['_key'])){
 	exit;
 }
 
-$resVersion = 55;
+$resVersion = 64;
 // $resVersion = time() . "dev";
 
 $clru=urlencode($CONFIG['twitch']['home']);
@@ -199,61 +199,93 @@ if ($twitchAuth) {
 					</button>
 				</h3>
 				<div class='lmd-content'>
-					<div>
-						<h4>Preferred Stream Quality</h4>
-						<div class='btn-group' data-toggle='buttons' id='quality-selector-container'>
-							<label class='btn btn-default'>
-								<input type='radio' name='quality-selector' autocomplete='off' data-value='audio,mobile,low,medium,high,source'> Audio only
-							</label>
-							<label class='btn btn-default'>
-								<input type='radio' name='quality-selector' autocomplete='off' data-value='mobile,low,medium,high,source'> Mobile
-							</label>
-							<label class='btn btn-default'>
-								<input type='radio' name='quality-selector' autocomplete='off' data-value='low,medium,high,source'> Low
-							</label>
-							<label class='btn btn-default'>
-								<input type='radio' name='quality-selector' autocomplete='off' data-value='medium,high,source'> Medium
-							</label>
-							<label class='btn btn-default'>
-								<input type='radio' name='quality-selector' autocomplete='off' data-value='high,source'> High
-							</label>
-							<label class='btn btn-default active'>
-								<input type='radio' name='quality-selector' autocomplete='off' data-value='source' checked> Source
-							</label>
+					<ul class='nav nav-tabs' id='settings-win-tabs'>
+						<li class='active'><a href='#settings-win-tab-app' data-toggle='tab'>Application</a></li>
+						<li><a href='#settings-win-tab-sl' data-toggle='tab'>Streamlink</a></li>
+					</ul>
+					<div class='tab-content'>
+						<div class='tab-pane fade in active' role='tabpanel' id='settings-win-tab-app'>
+							<div>
+								<h4>Preferred Stream Quality</h4>
+								<div class='btn-group' data-toggle='buttons' id='quality-selector-container'>
+									<label class='btn btn-default'>
+										<input type='radio' name='quality-selector' autocomplete='off' data-value='audio,mobile,low,medium,high,source'> Audio only
+									</label>
+									<label class='btn btn-default'>
+										<input type='radio' name='quality-selector' autocomplete='off' data-value='mobile,low,medium,high,source'> Mobile
+									</label>
+									<label class='btn btn-default'>
+										<input type='radio' name='quality-selector' autocomplete='off' data-value='low,medium,high,source'> Low
+									</label>
+									<label class='btn btn-default'>
+										<input type='radio' name='quality-selector' autocomplete='off' data-value='medium,high,source'> Medium
+									</label>
+									<label class='btn btn-default'>
+										<input type='radio' name='quality-selector' autocomplete='off' data-value='high,source'> High
+									</label>
+									<label class='btn btn-default active'>
+										<input type='radio' name='quality-selector' autocomplete='off' data-value='source' checked> Source
+									</label>
+								</div>
+							</div>
+							<div id='settings-form-player'>
+								<h4>Player Application</h4>
+								<div class='btn-group' data-toggle='buttons' id='player-selector-container'>
+									<label class='btn btn-default active'>
+										<input type='radio' name='player-selector' autocomplete='off' data-value='inapp' checked> In-app
+									</label>
+									<label class='btn btn-default'>
+										<input type='radio' name='player-selector' autocomplete='off' data-value='streamlink'> Streamlink
+									</label>
+								</div>
+							</div>
+							<div>
+								<h4>Other Settings</h4>
+							</div>
+							<div>
+								<label class='btn btn-default btn-block text-left'>
+									<input type='checkbox' autocomplete='off' id='chat-checkbox' class='hide'>
+									<span class='fa fa-square fa-fw' id='chat-checkbox-icon'></span>
+									Show Chat window by default
+								</label>
+							</div>
+							<div id='settings-logout'>
+								<button class='btn btn-default btn-block text-left' id='goto-logout'>
+									<span class='fa fa-sign-out fa-fw'></span>
+									Log out
+								</button>
+							</div>
 						</div>
-					</div>
-					<div id='settings-form-player'>
-						<h4>Player Application</h4>
-						<div class='btn-group' data-toggle='buttons' id='player-selector-container'>
-							<label class='btn btn-default active'>
-								<input type='radio' name='player-selector' autocomplete='off' data-value='inapp' checked> In-app
-							</label>
-							<label class='btn btn-default'>
-								<input type='radio' name='player-selector' autocomplete='off' data-value='livestreamer'> Livestreamer
-							</label>
+						<div class='tab-pane fade' role='tabpanel' id='settings-win-tab-sl'>
+							<div id='settings-form-streamlink-help'>
+								<h4>Streamlink Settings</h4>
+								<div class='alert alert-info'>
+									<span class='fa fa-fw fa-info-circle'></span>
+									Streamlink player is not active.
+									<div>This option is only available in a launcher.</div>
+								</div>
+							</div>
+							<div id='settings-form-streamlink-python'>
+								<h4>Python Location</h4>
+								<div>
+									<input type='text' placeholder='Path to the Python executable' id='player-sl-python' class='form-control' />
+								</div>
+							</div>
+							<div id='settings-form-streamlink-script'>
+								<h4>Streamlink Location</h4>
+								<div>
+									<input type='text' placeholder='Path to the Streamlink script' id='player-sl-script' class='form-control' />
+								</div>
+							</div>
+							<div id='player-sl-min'>
+								<h4>Additional Settings</h4>
+								<label class='btn btn-default btn-block text-left'>
+									<input type='checkbox' autocomplete='off' id='player-sl-min-checkbox' class='hide'>
+									<span class='fa fa-square fa-fw' id='player-sl-min-checkbox-icon'></span>
+									Minimize Browser when Streamlink starts
+								</label>
+							</div>
 						</div>
-					</div>
-					<div id='settings-form-livestreamer'>
-						<h4>Livestreamer Location</h4>
-						<div>
-							<input type='text' placeholder='Path to the livestreamer' id='player-ls-location' class='form-control' />
-						</div>
-					</div>
-					<div>
-						<h4>Other Settings</h4>
-					</div>
-					<div>
-						<label class='btn btn-default btn-block text-left'>
-							<input type='checkbox' autocomplete='off' id='chat-checkbox' class='hide'>
-							<span class='fa fa-square fa-fw' id='chat-checkbox-icon'></span>
-							Show Chat window by default
-						</label>
-					</div>
-					<div id='settings-logout'>
-						<button class='btn btn-default btn-block text-left' id='goto-logout'>
-							<span class='fa fa-sign-out fa-fw'></span>
-							Log out
-						</button>
 					</div>
 				</div>
 			</div>
